@@ -1,5 +1,6 @@
 package central_controle_fogo.com.backend_central_controle_fogo.model.auth;
 
+import central_controle_fogo.com.backend_central_controle_fogo.Enum.RolesEnum;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +24,7 @@ public class Roles extends Base {
     @Column(nullable = false, unique = true, length = 50)
     @NotBlank(message = "O nome é obrigatório")
     @Size(min = 3, max = 50, message = "O nome deve ter entre 3 e 50 caracteres")
-    private String name;
+    private RolesEnum name;
 
     @Column(nullable = false)
     @NotBlank(message = "O nome é obrigatório")
