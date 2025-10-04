@@ -12,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @ToString
 @EntityListeners(AuditingEntityListener.class)
+@MappedSuperclass
 public abstract class Base {
 
     @Id

@@ -5,15 +5,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 @Entity
 @Table(name = "auth_user")
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class User extends Base {
 
     @Column(unique = true, nullable = false, length = 30)
@@ -21,7 +24,7 @@ public class User extends Base {
     @Size(min = 5, max = 30, message = "O username deve ter entre 5 e 30 caracteres")
     private String username;
 
-    @Column(name = "normalized_name",unique = true, nullable = false,  length = 30)
+    @Column(name = "normalized_username",unique = true, nullable = false,  length = 30)
     private String normalizedUsername;
 
     @Column(nullable = false, length = 256)
@@ -36,35 +39,54 @@ public class User extends Base {
     @Column(name = "normalized_email",unique = true, nullable = false, length = 100)
     private String normalizedEmail;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number", nullable = false, length = 11)
     @NotBlank(message = "O número de telefone é obrigatório")
+    @Size(min= 11, max = 11, message = "O número de telefone deve ter 11 caracteres")
     private String phoneNumber;
+
+    @Column(unique = true, nullable = false, length = 11)
+    @NotBlank(message = "O CPF é obrigatório")
+    @Size(min = 11, max = 11, message = "O CPF deve ter no máximo 11 caracteres")
+    private String cpf;
 
     @Column(nullable = false, length = 200)
     @NotBlank(message = "O nome é obrigatório")
+    @Size(max = 200, message = "O nome deve ter no máximo 200 caracteres")
     private String name;
 
     @Column(name = "normalized_name",nullable = false, length = 200)
     private String normalizedName;
+
+    @Column(name = "date_birth", nullable = false)
+    @NotBlank(message = "Data de nascimento é obrigatório")
+    private Date dateBirth;
+
+    @Column(length = 1, nullable = false)
+    @NotBlank(message = "O gênero é obrigatório")
+    @Size(max = 1, message = "O gênero deve no maximo 1 caractere")
+    private String gender;
 
     @Setter
     @Column(name = "refresh_token", length = 256)
     private String refreshToken;
 
     @Setter
-    @Column(name = "refresh_token_expitarion", length = 256)
+    @Column(name = "refresh_token_expitarion")
     private Date refreshTokenExpiration;
 
     @Setter
     @Column(name = "using_default_password", nullable = false)
-    private boolean usingDefaultPassword = true;
+    private boolean usingDefaultPassword;
 
     @Setter
     @Column(name = "email_confirmed", nullable = false)
-    private boolean emailConfirmed = false;
+    private boolean emailConfirmed;
 
     @Setter
     @Column(name = "phone_number_confirmed", nullable = false)
-    private boolean phoneNumberConfirmed = false;
+    private boolean phoneNumberConfirmed;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserRoles> roles;
 
 }
