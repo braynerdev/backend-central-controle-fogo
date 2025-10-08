@@ -31,24 +31,13 @@ public class Ocurrence extends Base {
     @Setter
     private boolean occurrenceHasVictims;
 
-    //Local da ocorrência
-
-    @Column(nullable = false, length = 256)
-    @NotBlank(message = "Insira o enderaço da ocorrência")
+    @Column(length = 100)
     @Setter
-    private String occurrenceAddress;
-
-    @Column(length = 256)
-    @Setter
-    private String occurrenceAddressReference;
+    private String occurrenceLocationType; // fazer um enum (fiz um dos nomes da permissão e uso ele lá no models roles)
 
     @Column(length = 100)
     @Setter
-    private String occurrenceLocationType;
-
-    @Column(length = 100)
-    @Setter
-    private String occurrenceAdditionalRisks;
+    private String occurrenceAdditionalRisks; // fazer um enum (fiz um dos nomes da permissão e uso ele lá no models roles)
 
     @Column(nullable = false)
     @NotBlank(message = "Insira se o atendimento é prioritário")
@@ -57,7 +46,7 @@ public class Ocurrence extends Base {
 
     //Dados do solicitante
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50) //pode ser nula, existem solicitacoes que a pessoa não se identifica
     @NotBlank(message = "Insira o nome do solicitante")
     private String occurrenceRequester;
 
@@ -65,4 +54,8 @@ public class Ocurrence extends Base {
     @NotBlank(message = "Insira o telefone para contato do solicitante")
     @Setter
     private String occurrenceRequesterPhoneNumber;
+
+    // adicionar um relacionamento com a tabela de user,
+    // para identificar quem pegou a ocorrencia.
+    // Pode ser que em uma ocorrencia tenha varios users
 }
