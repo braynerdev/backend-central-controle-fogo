@@ -2,10 +2,7 @@ package central_controle_fogo.com.backend_central_controle_fogo.model.ocurrenceR
 
 
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -20,11 +17,10 @@ public class Ocurrence extends Base {
 
     //Dados da ocorrência
 
-    @Column(unique = true, nullable = false, length = 256)
-    @NotBlank(message = "Informe o tipo de ocorrência")
-    @Size(min = 5, max = 256)
-    @Setter
-    private String occurrenceType;
+
+    @ManyToOne()
+    @JoinColumn(name = "ocurrency_type_id")
+    private OcurrenceType occurrenceType;
 
     @Column(nullable = false)
     @NotBlank(message = "Insira se existem vítimas")

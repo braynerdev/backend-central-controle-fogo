@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 
@@ -17,28 +18,29 @@ public abstract class Base {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Setter(AccessLevel.PROTECTED)
+    private Long id;
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
-    private Date createdAt;
+    private OffsetDateTime createdAt;
 
     @Column(name = "update_date",nullable = false)
-    private Date updatedAt;
+    private OffsetDateTime updatedAt;
 
-    @Setter()
+    @Setter
     @Column(nullable = false)
     private boolean active;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = Date.from(Instant.now());
-        this.updatedAt = Date.from(Instant.now());
+        this.createdAt = OffsetDateTime.now();
+        this.updatedAt = OffsetDateTime.now();
         this.active = true;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = Date.from(Instant.now());
+        this.updatedAt = OffsetDateTime.now();
     }
 }
