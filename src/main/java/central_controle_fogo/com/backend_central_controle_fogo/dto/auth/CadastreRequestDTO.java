@@ -1,6 +1,7 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.auth;
 
 import central_controle_fogo.com.backend_central_controle_fogo.Enum.PatentEnum;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.address.AddressRegisterUserDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import jakarta.persistence.*;
@@ -55,14 +56,14 @@ public class CadastreRequestDTO {
     private String gender;
 
     @NotNull(message = "O batalhão é obrigatório")
-    private Battalion battalion;
+    private Long battalion;
 
     @NotNull(message = "O endereço é obrigatório")
-    private Address address;
+    private AddressRegisterUserDTO address;
 
     @NotNull(message = "A patente é obrigatória")
     @Size(max = 19, message = "A patente deve ter no máximo 19 caracteres")
     private PatentEnum patent;
 
-
+    //preciso criar a entidade patent
 }

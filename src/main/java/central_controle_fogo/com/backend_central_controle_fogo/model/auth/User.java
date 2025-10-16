@@ -85,7 +85,7 @@ public class User extends Base {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserRoles> roles;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "battalion_id", nullable = false)
     private Battalion battalion;
 

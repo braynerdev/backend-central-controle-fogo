@@ -13,6 +13,6 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Minha API")
                         .version("1.0")
-                        .description("Documentação da minha API Spring Boot"));
+                        .description("Documentação da API central controle de fogo"));
     }
 }
