@@ -11,7 +11,7 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Minha API")
+                        .title("Central Controle Fogo")
                         .version("1.0")
                         .description("Documentação da API central controle de fogo"));
     }
