@@ -17,11 +17,6 @@ public class Ocurrence extends Base {
 
     //Dados da ocorrência
 
-
-    @ManyToOne()
-    @JoinColumn(name = "ocurrency_type_id")
-    private OcurrenceType occurrenceType;
-
     @Column(nullable = false)
     @NotBlank(message = "Insira se existem vítimas")
     @Setter
@@ -29,17 +24,18 @@ public class Ocurrence extends Base {
 
     @Column(length = 100)
     @Setter
-    private String occurrenceLocationType; // fazer um enum (fiz um dos nomes da permissão e uso ele lá no models roles)
+    private String occurrenceLocationType; // ver se isso é viável, pq a agente nao tem como mapear todos os possiveis locais, e já temos o endereco
 
     @Column(length = 100)
     @Setter
-    private String occurrenceAdditionalRisks; // fazer um enum (fiz um dos nomes da permissão e uso ele lá no models roles)
+    private String occurrenceAdditionalRisks; // isso é o grau da ocorrência? se for, fazer um enum exemplo (leve, Médio, alto, extremo).
 
     @Column(nullable = false)
     @NotBlank(message = "Insira se o atendimento é prioritário")
     @Setter
-    private boolean occurrenceIsPriority;
+    private boolean occurrenceIsPriority; // isso é o prioridade da ocorrência? se for, fazer um enum exemplo (leve, Médio, alto, extremo).
 
+    // levando em conta esses dois ultimos (occurrenceAdditionalRisks, occurrenceIsPriority) eles são bem parecidos. Acho melhor a gente tirar. Fala com thiago para deixar sõ um deles
     //Dados do solicitante
 
     @Column(nullable = false, length = 50) //pode ser nula, existem solicitacoes que a pessoa não se identifica
@@ -51,7 +47,11 @@ public class Ocurrence extends Base {
     @Setter
     private String occurrenceRequesterPhoneNumber;
 
+    @ManyToOne()
+    @JoinColumn(name = "ocurrency_type_id")
+    private OcurrenceType occurrenceType;
+
     // adicionar um relacionamento com a tabela de user,
     // para identificar quem pegou a ocorrencia.
-    // Pode ser que em uma ocorrencia tenha varios users
+    // Pode ser que em uma ocorrencia tenha varios users !!!!
 }
