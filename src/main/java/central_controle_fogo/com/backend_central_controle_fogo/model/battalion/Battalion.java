@@ -31,7 +31,7 @@ public class Battalion extends Base {
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address endereco;
 
-    @OneToMany(mappedBy = "battalion")
+    @OneToMany(mappedBy = "battalion", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<User> users;
 
 
