@@ -1,20 +1,17 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.auth;
 
-import central_controle_fogo.com.backend_central_controle_fogo.Enum.PatentEnum;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.address.AddressRegisterUserDTO;
-import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
-import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.address.AddressRegisterDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 
 import java.time.OffsetDateTime;
-import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class CadastreRequestDTO {
@@ -59,11 +56,22 @@ public class CadastreRequestDTO {
     private Long battalion;
 
     @NotNull(message = "O endereço é obrigatório")
-    private AddressRegisterUserDTO address;
+    private AddressRegisterDTO address;
 
     @NotNull(message = "A patente é obrigatória")
-    @Size(max = 19, message = "A patente deve ter no máximo 19 caracteres")
-    private PatentEnum patent;
+    private Long patent;
 
-    //preciso criar a entidade patent
+
+    public static User mapDto(CadastreRequestDTO dto) {
+        return new User(
+                dto.getUsername(),
+                dto.getEmail(),
+                dto.getPhoneNumber(),
+                dto.getCpf(),
+                dto.getMatriculates(),
+                dto.getName(),
+                dto.getDateBirth(),
+                dto.getGender()
+        );
+    }
 }

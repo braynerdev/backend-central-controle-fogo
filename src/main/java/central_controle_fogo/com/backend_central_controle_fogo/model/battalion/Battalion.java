@@ -22,17 +22,27 @@ public class Battalion extends Base {
 
     @Setter
     @Column(nullable = false, length = 100)
-    @NotBlank(message = "O nome do batalhão é obrigatório")
-    @Size(max = 100, message = "O nome do batalhão deve ter no máximo 100 caracters")
     private String name;
+
+    @Setter
+    @Column(name = "phone_number", nullable = false, length = 11)
+    private String phoneNumber;
+
+    @Setter
+    @Column(nullable = false, length = 100)
+    private String email;
 
     @Setter
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Address endereco;
 
-    @OneToMany(mappedBy = "battalion", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "battalion", cascade = CascadeType.REMOVE)
     private List<User> users;
 
+    public Battalion(String name, String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
 
 }

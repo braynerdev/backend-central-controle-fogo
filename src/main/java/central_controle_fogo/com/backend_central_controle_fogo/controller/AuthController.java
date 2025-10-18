@@ -2,13 +2,10 @@ package central_controle_fogo.com.backend_central_controle_fogo.controller;
 
 
 import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.CadastreRequestDTO;
-import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
-import central_controle_fogo.com.backend_central_controle_fogo.service.AuthService;
-import central_controle_fogo.com.backend_central_controle_fogo.service.IAuthService;
+import central_controle_fogo.com.backend_central_controle_fogo.service.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +20,7 @@ public class AuthController {
     private AuthService authService ;
 
     @GetMapping(value = "/{id}")
-    @Operation(summary = "Buscar cliente por ID")
+    @Operation(summary = "Buscar usuário por ID")
     public ResponseEntity getById(@PathVariable Long id) {
         try{
             if (id == null || id < 1) {
@@ -38,8 +35,8 @@ public class AuthController {
 
     }
 
-    @PostMapping(value = "/auth/deactivate/{id}")
-    @Operation(summary = "Desativar cliente pelo id")
+    @PutMapping(value = "deactivate/{id}")
+    @Operation(summary = "Desativar usuário pelo id")
     public ResponseEntity deactivate(@PathVariable Long id) {
         try{
             if (id == null || id < 1) {
@@ -57,14 +54,19 @@ public class AuthController {
         }
     }
 
-    @PostMapping
+    // parei aqui
+    @PostMapping(value = "/created/user")
     @Operation(summary = "Criar usuário")
     public ResponseEntity registerUser(@Valid @RequestBody CadastreRequestDTO cadastreRequestDTO) {
         try{
             if (cadastreRequestDTO == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            var service = authService.CreatedUser(cadastreRequestDTO);
+            if(!service.isSucesso()){
+                return new ResponseEntity<>(service.getMensagem(),HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(service.getMensagem(),HttpStatus.CREATED);
         }
         catch (Exception ex){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
