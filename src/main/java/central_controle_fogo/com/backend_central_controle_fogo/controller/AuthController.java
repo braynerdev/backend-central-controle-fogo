@@ -54,7 +54,7 @@ public class AuthController {
         }
     }
 
-    // parei aqui
+
     @PostMapping(value = "/created/user")
     @Operation(summary = "Criar usuário")
     public ResponseEntity registerUser(@Valid @RequestBody CadastreRequestDTO cadastreRequestDTO) {
