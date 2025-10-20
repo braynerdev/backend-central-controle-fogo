@@ -1,4 +1,4 @@
-package central_controle_fogo.com.backend_central_controle_fogo.model.ocurrenceReport;
+package central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport;
 
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import jakarta.persistence.Column;
@@ -11,17 +11,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "ocurrence_type")
+@Table(name = "Occurrence_type")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OcurrenceType extends Base {
+public class OccurrenceType extends Base {
     @Column(length = 100, nullable = false)
     @NotBlank(message = "Tipo de ocorrência não pode ser nulo")
     @Size(max = 100, message = "Tipo de ocorrência pode ter no máximo 100 caracters")
     private String name;
 
-    @Column(length = 200, nullable = true)
-    @Size(max = 100, message = "Descrição do tipo de ocorrência pode ter no máximo 100 caracters")
-    private String description;
 }
