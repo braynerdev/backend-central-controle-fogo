@@ -19,12 +19,13 @@ public class BattalionRequestDTO {
 
     @NotBlank(message = "O e-mail é obrigatório")
     @Size(max = 100, message = "O e-mail deve ter no máximo 100 caracteres")
-    private String phoneNumber;
-
-    @NotBlank(message = "O número de e-mail é obrigatório")
-    @Size(min = 10, max = 11, message = "o número de telefone deve ter de 10 a 11 caracteres")
-    @Email(message = "email no formato errado")
+    @Email(message = "email no formato inválido")
     private String email;
+
+
+    @NotBlank(message = "O número de telefone é obrigatório")
+    @Size(min = 10, max = 11, message = "o número de telefone deve ter de 10 a 11 caracteres")
+    private String phoneNumber;
 
     @Valid
     private AddressRegisterDTO address;
