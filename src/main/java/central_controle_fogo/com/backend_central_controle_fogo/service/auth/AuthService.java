@@ -43,6 +43,7 @@ public class AuthService implements IAuthService {
 
     }
 
+    @Override
     public ResponseDTO deactivateUser(Long id) {
         try{
             var user = userRepository.findById(id).orElse(null);

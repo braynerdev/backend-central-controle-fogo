@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -15,19 +16,20 @@ public class GlobalExptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, Object> errors = new HashMap<>();
+        Map<String, Object> errors = new LinkedHashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 addNestedError(errors, error.getField(), error.getDefaultMessage())
         );
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("errors", errors);
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("errors", errors);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @SuppressWarnings("unchecked")
     private void addNestedError(Map<String, Object> errors, String fieldPath, String message) {
         String[] parts = fieldPath.split("\\.");
         Map<String, Object> currentLevel = errors;
@@ -35,7 +37,7 @@ public class GlobalExptionHandler {
         for (int i = 0; i < parts.length - 1; i++) {
             String part = parts[i];
             currentLevel = (Map<String, Object>) currentLevel
-                    .computeIfAbsent(part, k -> new HashMap<>());
+                    .computeIfAbsent(part, k -> new LinkedHashMap<>());
         }
 
         currentLevel.put(parts[parts.length - 1], message);

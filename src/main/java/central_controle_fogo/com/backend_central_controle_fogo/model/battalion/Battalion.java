@@ -40,9 +40,10 @@ public class Battalion extends Base {
     @OneToMany(mappedBy = "battalion", cascade = CascadeType.REMOVE)
     private List<User> users;
 
-    public Battalion(String name, String phoneNumber) {
+    public Battalion(String name, String phoneNumber,  String email) {
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.email = email;
     }
 
 }
