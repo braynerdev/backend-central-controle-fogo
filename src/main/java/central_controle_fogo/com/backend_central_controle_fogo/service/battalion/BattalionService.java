@@ -2,6 +2,8 @@ package central_controle_fogo.com.backend_central_controle_fogo.service.battalio
 
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionResponsePaginatorDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
@@ -9,7 +11,11 @@ import central_controle_fogo.com.backend_central_controle_fogo.repository.addres
 import central_controle_fogo.com.backend_central_controle_fogo.repository.battalion.IBattalionRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BattalionService implements IBattalionService {
@@ -84,5 +90,32 @@ public class BattalionService implements IBattalionService {
         }
 
 
+    }
+
+    @Override
+    public PaginatorGeneric<BattalionResponsePaginatorDTO> GetPaginatorBattalion(Pageable pageable, String name, boolean active) {
+
+        Page<Battalion> paginator = battalionRepository.findAll(pageable);
+
+        List<BattalionResponsePaginatorDTO> filterList = paginator.stream()
+                .map(b -> modelMapper.map(b, BattalionResponsePaginatorDTO.class))
+                .filter(b -> {
+                    boolean matches = true;
+                    if (name != null && !name.isEmpty()) {
+                        matches = b.getName().toLowerCase().contains(name.toLowerCase());
+                    }
+                    matches = matches && b.isActive() == active;
+                    return matches;
+                })
+                .collect(Collectors.toList());
+
+
+        var paginatorGeneric = new PaginatorGeneric<BattalionResponsePaginatorDTO>(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                filterList.size(),
+                filterList
+        );
+        return paginatorGeneric;
     }
 }

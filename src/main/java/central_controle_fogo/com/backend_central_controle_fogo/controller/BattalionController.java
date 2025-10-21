@@ -1,14 +1,15 @@
 package central_controle_fogo.com.backend_central_controle_fogo.controller;
 
+
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionRequestDTO;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionResponseDTO;
-import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.service.battalion.BattalionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,6 +79,26 @@ public class BattalionController {
                 return new ResponseEntity<>(service.getMensagem(), HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(service.getMensagem(), HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/paginator")
+    @Operation(summary = "Pegar batalhões paginados")
+    public ResponseEntity<PaginatorGeneric> getBattalionPaginator(@RequestParam(defaultValue = "1") int page,
+                                                                  @RequestParam(defaultValue = "10") int size,
+                                                                  @RequestParam(required = false) String name,
+                                                                  @RequestParam(defaultValue = "true") boolean active) {
+        try {
+            Pageable pageable  = PageRequest.of(page - 1, size);
+            var service = battalionService.GetPaginatorBattalion(pageable, name, active);
+
+            if (service == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(service, HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

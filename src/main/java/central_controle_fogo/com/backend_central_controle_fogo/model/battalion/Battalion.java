@@ -29,7 +29,7 @@ public class Battalion extends Base {
     private String phoneNumber;
 
     @Setter
-    @Column(nullable = false, length = 100)
+    @Column(unique = true ,nullable = false, length = 100 )
     private String email;
 
     @Setter
