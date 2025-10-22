@@ -1,6 +1,8 @@
 package central_controle_fogo.com.backend_central_controle_fogo.service.auth;
 
 import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.CadastreRequestDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.LoginRequest;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.LoginResponse;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.auth.Patent;
 import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
@@ -9,11 +11,19 @@ import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Add
 import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IRepositoryUser;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.battalion.IBattalionRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.patent.IPatent;
+import org.apache.catalina.Role;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService implements IAuthService {
@@ -28,6 +38,8 @@ public class AuthService implements IAuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtEncoder jwtEncoder;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -93,4 +105,35 @@ public class AuthService implements IAuthService {
         }
     }
 
+    @Override
+    public String generateToken(LoginRequest loginRequest,long timeExpired) {
+        var user = userRepository.findByUsername(loginRequest.getUsername());
+
+        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, passwordEncoder)) {
+            throw new BadCredentialsException("user or password is invalid!");
+        }
+
+        var now = Instant.now();
+        long expiresIn = timeExpired;
+
+//        var scopes = user.get().getRoles()
+//                .stream()
+//                .map(Role::getRolename)
+//                .collect(Collectors.joining(" "));
+
+        var claims = JwtClaimsSet.builder()
+                .issuer("central_controle_fogo")
+                .subject(user.get().getId().toString())
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(expiresIn))
+//                .claim("scope", scopes)
+                .build();
+
+        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return jwtValue;
+    }
+
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
 }

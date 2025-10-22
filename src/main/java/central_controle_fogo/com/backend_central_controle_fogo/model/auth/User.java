@@ -1,15 +1,14 @@
 package central_controle_fogo.com.backend_central_controle_fogo.model.auth;
 
-import central_controle_fogo.com.backend_central_controle_fogo.Enum.PatentEnum;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.LoginRequest;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.validation.constraints.NotBlank;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.time.OffsetDateTime;
@@ -115,5 +114,9 @@ public class User extends Base {
         this.usingDefaultPassword = false;
         this.emailConfirmed = false;
         this.phoneNumberConfirmed = false;
+    }
+
+    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(loginRequest.getPassword(), this.password);
     }
 }
