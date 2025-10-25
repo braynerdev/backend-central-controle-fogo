@@ -14,4 +14,6 @@ public interface IBattalionService {
     BattalionResponseDTO GetBattalionById(Long id);
     ResponseDTO UpdateBattalion(Long id, BattalionRequestDTO dto);
     PaginatorGeneric<BattalionResponsePaginatorDTO> GetPaginatorBattalion(Pageable pageable,  String name, boolean active);
+    boolean deactivateBattalion(Long id);
+    boolean activateBattalion(Long id);
 }

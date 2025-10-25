@@ -4,6 +4,7 @@ import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.LoginReq
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
+import central_controle_fogo.com.backend_central_controle_fogo.model.patent.Patent;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -111,7 +112,7 @@ public class User extends Base {
         this.normalizedName = name.toUpperCase();
         this.dateBirth = dateBirth;
         this.gender = gender;
-        this.usingDefaultPassword = false;
+        this.usingDefaultPassword = true;
         this.emailConfirmed = false;
         this.phoneNumberConfirmed = false;
     }

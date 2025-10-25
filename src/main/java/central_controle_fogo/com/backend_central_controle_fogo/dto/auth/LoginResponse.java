@@ -1,23 +1,31 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.auth;
 
-import central_controle_fogo.com.backend_central_controle_fogo.dto.address.AddressRegisterDTO;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponse {
+    private boolean success;
+    private String message;
     private String accessToken;
     private String refreshToken;
-    private Date expiresRefreshToken;
+    private OffsetDateTime expiresRefreshToken;
     private UserResponseDTO user;
+
+    public LoginResponse(boolean success, String message) {
+        this.message = message;
+        this.success = success;
+    }
+
+    public LoginResponse(boolean success, String message, String accessToken, String refreshToken,OffsetDateTime expiresRefreshToken, UserResponseDTO user) {
+        this.success = success;
+        this.user = user;
+        this.expiresRefreshToken = expiresRefreshToken;
+        this.refreshToken = refreshToken;
+        this.accessToken = accessToken;
+        this.message = message;
+    }
 }

@@ -1,10 +1,15 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.auth;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonPropertyOrder({"username", "password"})
 public class LoginRequest {
 
-    private String Username;
-    private String Password;
+    private String username;
+    private String password;
 }

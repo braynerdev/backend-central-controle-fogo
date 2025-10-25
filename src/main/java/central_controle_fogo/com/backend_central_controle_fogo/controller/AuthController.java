@@ -1,17 +1,18 @@
 package central_controle_fogo.com.backend_central_controle_fogo.controller;
 
 
-import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.CadastreRequestDTO;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.LoginRequest;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.LoginResponse;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.UserResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.*;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.service.auth.AuthService;
 import central_controle_fogo.com.backend_central_controle_fogo.service.auth.IAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("auth")
@@ -70,6 +73,21 @@ public class AuthController {
         }
     }
 
+    @PutMapping(value = "activate/{id}")
+    @Operation(summary = "Ativar o usuário.")
+    public ResponseEntity activate(@PathVariable Long id){
+        try{
+            if (id == null || id < 1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            var service = authService.activateUser(id);
+
+            return service.isSucesso() ? new ResponseEntity<>(service.getMensagem(),HttpStatus.OK) : new ResponseEntity<>(service.getMensagem(),HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PostMapping(value = "/created/user")
     @Operation(summary = "Criar usuário")
@@ -80,43 +98,84 @@ public class AuthController {
             }
             var service = authService.CreatedUser(cadastreRequestDTO);
             if(!service.isSucesso()){
-                return new ResponseEntity<>(service.getMensagem(),HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(service,HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(service.getMensagem(),HttpStatus.CREATED);
+            return new ResponseEntity<>(service,HttpStatus.CREATED);
         }
         catch (Exception ex){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @PostMapping(value = "refresh-token/")
+    @Operation(summary = "Refrsh token")
+    public ResponseEntity refreshToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+        try{
+            if (refreshTokenRequestDTO.getRefreshToken() == null || refreshTokenRequestDTO.getRefreshToken().isEmpty()
+            || refreshTokenRequestDTO.getUsername() == null || refreshTokenRequestDTO.getUsername().isEmpty()
+            ) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
 
+            var service = authService.refreshToken(refreshTokenRequestDTO);
+            Map<String, String> response = new HashMap<>();
+            response.put("token", service);
+
+            return service == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(response ,HttpStatus.OK);
+        }
+        catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        long accessTokenTime = 300;
-        long refreshTokenTime = 2592000;
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
+        try{
+            var accessToken = authService.login(loginRequest);
+            if (!accessToken.isSuccess()) {
+                return new ResponseEntity<>(accessToken,HttpStatus.NOT_FOUND);
+            }
 
-        var accessToken = authService.generateToken(loginRequest, accessTokenTime);
-        if (accessToken == null || accessToken.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(accessToken, HttpStatus.OK);
         }
-        var dateTimeValidRefreshToken = Date.from(Instant.now().plusSeconds(refreshTokenTime));
-        var refreshToken = authService.generateToken(loginRequest, refreshTokenTime);
-        if (refreshToken == null || refreshToken.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        var user = authService.getByUsername(loginRequest.getUsername());
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        UserResponseDTO userResponseDTO = modelMapper.map(user, UserResponseDTO.class);
-        LoginResponse responseDto = new LoginResponse(
-                accessToken,
-                refreshToken,
-                dateTimeValidRefreshToken,
-                userResponseDTO
-        );
 
-        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/logout/{id}")
+    public ResponseEntity logout(@RequestParam Long id) {
+        try{
+            var accessToken = authService.logout(id);
+            if (!accessToken) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @GetMapping(value = "/paginator")
+    @Operation(summary = "Pegar usuários paginados")
+    public ResponseEntity<PaginatorGeneric> getBattalionPaginator(@RequestParam(defaultValue = "1") int page,
+                                                                  @RequestParam(defaultValue = "10") int size,
+                                                                  @RequestParam(required = false) String filterGeneric,
+                                                                  @RequestParam(defaultValue = "true") boolean active){
+        try {
+            Pageable pageable  = PageRequest.of(page - 1, size);
+            var service = authService.GetPaginatorUser(pageable, active, filterGeneric);
+
+            if (service == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(service, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -118,4 +118,28 @@ public class BattalionService implements IBattalionService {
         );
         return paginatorGeneric;
     }
+
+    @Override
+    public boolean deactivateBattalion(Long id) {
+        var battalion = battalionRepository.findById(id).orElse(null);
+        if(battalion == null){
+            return false;
+        }
+        battalion.setActive(false);
+        battalionRepository.save(battalion);
+        return true;
+    }
+
+    @Override
+    public boolean activateBattalion(Long id) {
+        var battalion = battalionRepository.findById(id).orElse(null);
+        if(battalion == null || battalion.isActive()){
+            return false;
+        }
+        battalion.setActive(true);
+        battalionRepository.save(battalion);
+        return true;
+    }
+
+
 }

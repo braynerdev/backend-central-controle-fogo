@@ -24,7 +24,7 @@ public class Roles extends Base {
     @Column(nullable = false, unique = true, length = 50)
     @NotBlank(message = "O nome é obrigatório")
     @Size(min = 3, max = 50, message = "O nome deve ter entre 3 e 50 caracteres")
-    private RolesEnum name;
+    private String name;
 
     @Column(nullable = false)
     @NotBlank(message = "O nome é obrigatório")

@@ -64,7 +64,7 @@ public class BattalionController {
         }
     }
 
-    @PutMapping(value = "/put/{id}")
+    @PutMapping(value = "/{id}")
     @Operation(summary = "Editar Batalhão")
     public ResponseEntity putBattalion(@PathVariable() Long id, @Valid @RequestBody BattalionRequestDTO battalionRequestDTO) {
         try {
@@ -99,6 +99,35 @@ public class BattalionController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(service, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping(value = "/deactivate/{id}")
+    @Operation(summary = "Desativar usuário.")
+    public ResponseEntity deactivateBattalion(@RequestParam Long id){
+        try{
+            if  (id == null || id < 1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            var service = battalionService.deactivateBattalion(id);
+            return service ? new ResponseEntity("Batalhão desativado com sucesso.",HttpStatus.OK) : new ResponseEntity<>("Batalhão não existe ou já está desativado.",HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(value = "/activate/{id}")
+    @Operation(summary = "Ativar batalhão")
+    public ResponseEntity activateBattalion(@RequestParam Long id){
+        try{
+            if  (id == null || id < 1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            var service = battalionService.activateBattalion(id);
+            return service ? new ResponseEntity("Batalhão ativado com sucesso.",HttpStatus.OK) : new ResponseEntity<>("Batalhão não existe ou já está ativado", HttpStatus.NOT_FOUND);
         }
         catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

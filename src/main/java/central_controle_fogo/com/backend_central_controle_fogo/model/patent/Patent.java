@@ -1,12 +1,9 @@
-package central_controle_fogo.com.backend_central_controle_fogo.model.auth;
+package central_controle_fogo.com.backend_central_controle_fogo.model.patent;
 
-import central_controle_fogo.com.backend_central_controle_fogo.Enum.PatentEnum;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.CadastreRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.springframework.boot.context.properties.bind.Name;
 
 import java.util.List;
 

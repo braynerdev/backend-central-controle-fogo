@@ -1,6 +1,6 @@
 package central_controle_fogo.com.backend_central_controle_fogo.repository.patent;
 
-import central_controle_fogo.com.backend_central_controle_fogo.model.auth.Patent;
+import central_controle_fogo.com.backend_central_controle_fogo.model.patent.Patent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
