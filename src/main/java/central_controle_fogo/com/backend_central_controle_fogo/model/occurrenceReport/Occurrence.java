@@ -1,37 +1,34 @@
 package central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport;
 
-
+import central_controle_fogo.com.backend_central_controle_fogo.Enum.OccurrenceStatus;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Occurrence")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Occurrence extends Base {
 
-    //Dados da ocorrência
-
+    // DADOS DA FASE 1
     @Column(nullable = false)
-    @Setter
-    @NotBlank(message = "Selecione se há vítimas")
+    @NotNull(message = "Selecione se há vítimas")
     private boolean occurrenceHasVictims;
 
-
     @Column(nullable = false)
-    @Setter
-    @NotBlank(message = "Selecione se há prioridade no atendimento")
+    @NotNull(message = "Selecione se há prioridade no atendimento")
     private boolean occurrenceIsPriority;
-
 
     @Column(nullable = false, length = 50)
     @NotBlank(message = "Insira o nome do solicitante")
@@ -39,43 +36,46 @@ public class Occurrence extends Base {
 
     @Column(nullable = false, length = 11)
     @NotBlank(message = "Insira o telefone para contato do solicitante")
-    @Setter
     private String occurrenceRequesterPhoneNumber;
 
-
-    @ManyToOne()
-    @JoinColumn(name = "ocurrency_type_id")
-    private OccurrenceType occurrenceType;
-
-    @ManyToOne()
-    @JoinColumn(name = "ocurrency_sub_type_id")
+    @ManyToOne
+    @JoinColumn(name = "occurrence_sub_type_id")
+    @NotNull(message = "O subtipo da ocorrência é obrigatório")
     private OccurrenceSubType occurrenceSubType;
 
-
-    @Setter
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
+    @NotNull(message = "O endereço é obrigatório")
     private Address address;
 
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private OccurrenceStatus status;
+
+    // DADOS DA FASE 2
+
     @Column(length = 2000)
-    @NotBlank(message = "Descreva detalhes da ocorrência")
-    @Setter
     private String occurrenceDetails;
-
-    //Localização GPS
-
     @Column
-    @NotBlank(message = "A latitude não pode ser nula")
-    @DecimalMin(value = "-90.0", message = "Latitude inválida (mínimo -90.0)")
-    @DecimalMax(value = "90.0", message = "Latitude inválida (máximo 90.0)")
+
     private BigDecimal latitude;
 
     @Column
-    @DecimalMin(value = "-180.0", message = "Longitude inválida (mínimo -180.0)")
-    @DecimalMax(value = "180.0", message = "Longitude inválida (máximo 180.0)")
+
     private BigDecimal longitude;
 
-    // adicionar um relacionamento com a tabela de user,
-    // para identificar quem pegou a ocorrencia.
-    // Pode ser que em uma ocorrencia tenha varios users !!!!
+    @Column
+    private LocalDateTime occurrenceArrivalTime;
+
+    @Column(length = 500)
+    private String involvedPeople;
+
+    @Column(length = 500)
+    private String involvedVehicles;
+
+    @Column(length = 500)
+    private String emergencyVehicles;
 }
+
+
