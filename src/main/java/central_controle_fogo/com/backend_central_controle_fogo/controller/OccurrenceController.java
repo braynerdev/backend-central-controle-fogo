@@ -48,9 +48,37 @@ public class OccurrenceController {
         return ResponseEntity.ok(updatedOccurrence);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOccurrence(@PathVariable Long id) {
-        occurrenceService.delete(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/deactivate/{id}")
+    public ResponseEntity deactivateOccurrence(@PathVariable Long id) {
+        try{
+            if(id < 1){
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+            var service = occurrenceService.deactivate(id);
+            if (!service){
+                return new ResponseEntity("Ocorrência não encontrada",HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>("Ocorrência desativada com sucesso.", HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/activate/{id}")
+    public ResponseEntity activateOccurrence(@PathVariable Long id) {
+        try{
+            if(id < 1){
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+            var service = occurrenceService.activate(id);
+            if (!service){
+                return new ResponseEntity("Ocorrência não encontrada",HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>("Ocorrência ativada com sucesso.", HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

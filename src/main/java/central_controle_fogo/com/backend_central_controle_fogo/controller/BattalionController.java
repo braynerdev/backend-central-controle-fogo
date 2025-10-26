@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("battalion")
+@RequestMapping("api/battalion")
 @Tag(name = "battalion", description = "Operações relacionadas a batalhão")
 public class BattalionController {
 

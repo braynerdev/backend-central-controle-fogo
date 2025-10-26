@@ -100,11 +100,40 @@ public class OccurrenceService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (!occurrenceRepository.existsById(id)) {
-            throw new OpenApiResourceNotFoundException("Ocorrência não encontrada com ID: " + id);
+    public boolean deactivate(Long id) {
+        try{
+            var occurence = occurrenceRepository.findById(id).orElse(null);
+            if (occurence == null) {
+                return false;
+            }
+            occurence.setActive(false);
+            occurrenceRepository.save(occurence);
+            return true;
         }
-        occurrenceRepository.deleteById(id);
+        catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    @Transactional
+    public boolean activate(Long id) {
+        try{
+            var occurence = occurrenceRepository.findById(id).orElse(null);
+            if (occurence == null) {
+                return false;
+            }
+            if (occurence.isActive()) {
+                return false;
+            }
+            occurence.setActive(true);
+            occurrenceRepository.save(occurence);
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+
     }
 
     // Mapeia os dados da Etapa 1
