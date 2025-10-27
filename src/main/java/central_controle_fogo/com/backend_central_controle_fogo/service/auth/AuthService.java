@@ -1,7 +1,6 @@
 package central_controle_fogo.com.backend_central_controle_fogo.service.auth;
 
 import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.*;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionResponsePaginatorDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseListMessageDTO;
@@ -11,8 +10,7 @@ import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.B
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IRepositoryUser;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.battalion.IBattalionRepository;
-import central_controle_fogo.com.backend_central_controle_fogo.repository.patent.IPatent;
-import central_controle_fogo.com.backend_central_controle_fogo.validation.RegisterUserValidation;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.patent.IPatentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,13 +22,11 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Base64;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,15 +37,13 @@ public class AuthService implements IAuthService {
     @Autowired
     private IBattalionRepository battalionRepository;
     @Autowired
-    private IPatent patentRepository;
+    private IPatentRepository patentRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtEncoder jwtEncoder;
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private RegisterUserValidation registerUserValidation;
 
 
 
@@ -143,7 +137,6 @@ public class AuthService implements IAuthService {
             var gerarToken = generateToken(user);
             System.out.println("Token: " + gerarToken);
             if(gerarToken == null){
-                System.out.println("ççççççççççççççççç");
                 return null;
             };
 
@@ -151,7 +144,6 @@ public class AuthService implements IAuthService {
 
         }
         catch (Exception ex) {
-            System.out.println("lllllllllllllllll" + ex.getMessage());
             return null;
         }
     }
@@ -161,11 +153,6 @@ public class AuthService implements IAuthService {
     @Override
     public ResponseListMessageDTO CreatedUser(CadastreRequestDTO dto) {
         try {
-
-            var validate = registerUserValidation.registerUserValidation(dto);
-            if(!validate.isEmpty()){
-                return ResponseListMessageDTO.erro(validate);
-            }
 
             Address address = modelMapper.map(dto.getAddress(), Address.class);
             Battalion battalion = battalionRepository.findById(dto.getBattalion()).orElse(null);

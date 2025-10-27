@@ -39,9 +39,10 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/created/user").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/battalion/created").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/created/user").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/battalion/created").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/patent/register/patent").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()

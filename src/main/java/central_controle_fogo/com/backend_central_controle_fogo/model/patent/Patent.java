@@ -15,11 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Patent extends Base {
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 100, nullable = false, unique = true)
     private String name;
-
-    @Column(length = 200, nullable = true)
-    private String description;
 
     @OneToMany(mappedBy = "patent",cascade = CascadeType.REMOVE)
     private List<User> users;
