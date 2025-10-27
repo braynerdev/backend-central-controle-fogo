@@ -106,7 +106,7 @@ public class PatentService implements IPatentService{
             return ResponseDTO.erro("impossivel desativar patente!");
         }
         if (repositoryPatent.isActive()){
-            return ResponseDTO.erro("Patente já esta ativada!");
+            return ResponseDTO.erro("Patente já esta desativada!");
         }
         repositoryPatent.setActive(false);
         patentRepository.save(repositoryPatent);

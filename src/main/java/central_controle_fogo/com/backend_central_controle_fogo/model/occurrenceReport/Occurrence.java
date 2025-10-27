@@ -2,6 +2,7 @@ package central_controle_fogo.com.backend_central_controle_fogo.model.occurrence
 
 import central_controle_fogo.com.backend_central_controle_fogo.Enum.OccurrenceStatus;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.UserRoles;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import jakarta.persistence.*;
 
@@ -13,6 +14,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "Occurrence")
@@ -68,11 +70,12 @@ public class Occurrence extends Base {
     @Column
     private LocalDateTime occurrenceArrivalTime;
 
-    @Column(length = 500)
-    private String involvedPeople;
 
-    @Column(length = 500)
-    private String involvedVehicles;
+    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OccurenceUsers> users;
+
+    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OccurrenceVehicles> vehicles;
 
     @Column(length = 500)
     private String emergencyVehicles;

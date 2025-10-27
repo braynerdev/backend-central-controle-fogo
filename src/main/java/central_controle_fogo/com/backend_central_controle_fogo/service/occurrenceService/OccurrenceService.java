@@ -90,8 +90,8 @@ public class OccurrenceService {
         occurrence.setLatitude(dto.getLatitude());
         occurrence.setLongitude(dto.getLongitude());
         occurrence.setOccurrenceArrivalTime(dto.getOccurrenceArrivalTime());
-        occurrence.setInvolvedPeople(dto.getInvolvedPeople());
-        occurrence.setInvolvedVehicles(dto.getInvolvedVehicles());
+//        occurrence.setInvolvedPeople(dto.getInvolvedPeople());
+//        occurrence.setInvolvedVehicles(dto.getInvolvedVehicles());
         occurrence.setEmergencyVehicles(dto.getEmergencyVehicles());
         occurrence.setStatus(dto.getFinalStatus()); // Define o status final
 

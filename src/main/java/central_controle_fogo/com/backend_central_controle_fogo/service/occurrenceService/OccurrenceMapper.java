@@ -43,8 +43,8 @@ public class OccurrenceMapper {
         dto.setLatitude(occurrence.getLatitude());
         dto.setLongitude(occurrence.getLongitude());
         dto.setOccurrenceArrivalTime(occurrence.getOccurrenceArrivalTime());
-        dto.setInvolvedPeople(occurrence.getInvolvedPeople());
-        dto.setInvolvedVehicles(occurrence.getInvolvedVehicles());
+//        dto.setInvolvedPeople(occurrence.getInvolvedPeople());
+//        dto.setInvolvedVehicles(occurrence.getInvolvedVehicles());
         dto.setEmergencyVehicles(occurrence.getEmergencyVehicles());
 
         return dto;
