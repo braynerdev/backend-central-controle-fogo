@@ -1,15 +1,21 @@
+# JWT keys
+jwt.public.key=classpath:app.pub
+jwt.private.key=classpath:app.key
+
+# App identity
 spring.application.name=backend-central-controle-fogo
-server.port=8083
 
+# Server port
+server.port=8080
 
+# Database configuration
 spring.datasource.url=jdbc:postgresql://localhost:5432/central_controle_fogo
 spring.datasource.username=postgres
 spring.datasource.password=root
 spring.datasource.driver-class-name=org.postgresql.Driver
 
-
+# Hibernate and JPA
 spring.jpa.properties.hibernate.jdbc.time_zone=UTC
-
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true

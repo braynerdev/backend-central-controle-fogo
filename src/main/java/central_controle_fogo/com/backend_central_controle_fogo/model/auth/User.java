@@ -1,15 +1,15 @@
 package central_controle_fogo.com.backend_central_controle_fogo.model.auth;
 
-import central_controle_fogo.com.backend_central_controle_fogo.Enum.PatentEnum;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.LoginRequest;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
+import central_controle_fogo.com.backend_central_controle_fogo.model.patent.Patent;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.validation.constraints.NotBlank;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.time.OffsetDateTime;
@@ -27,6 +27,7 @@ public class User extends Base {
     @Column(name = "normalized_username",unique = true, nullable = false,  length = 30)
     private String normalizedUsername;
 
+    @Setter
     @Column(nullable = false, length = 256)
     private String password;
 
@@ -41,7 +42,7 @@ public class User extends Base {
     @Column(name = "phone_number", nullable = false, length = 11)
     private String phoneNumber;
 
-    @Column(unique = true, nullable = false, length = 11)
+    @Column(unique = true, nullable = false, length = 11, columnDefinition= "CHAR(11)")
     private String cpf;
 
     @Column(unique = true, nullable = false, length = 30)
@@ -54,7 +55,6 @@ public class User extends Base {
     @Column(name = "normalized_name",nullable = false, length = 200)
     private String normalizedName;
 
-    @Setter
     @Column(name = "date_birth", nullable = false)
     private OffsetDateTime dateBirth;
 
@@ -85,6 +85,7 @@ public class User extends Base {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserRoles> roles;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "battalion_id", nullable = false)
     private Battalion battalion;
@@ -94,7 +95,29 @@ public class User extends Base {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    @Column(nullable = false, length = 19)
-    private PatentEnum patent;
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "patent_id", referencedColumnName = "id")
+    private Patent patent;
 
+    public User(String username, String email, String phoneNumber, String cpf, String matriculates, String name, OffsetDateTime dateBirth, String gender) {
+        this.username = username;
+        this.normalizedUsername = username.toUpperCase();
+        this.email = email;
+        this.normalizedEmail = email.toUpperCase();
+        this.phoneNumber = phoneNumber;
+        this.cpf = cpf;
+        this.matriculates = matriculates;
+        this.name = name;
+        this.normalizedName = name.toUpperCase();
+        this.dateBirth = dateBirth;
+        this.gender = gender;
+        this.usingDefaultPassword = true;
+        this.emailConfirmed = false;
+        this.phoneNumberConfirmed = false;
+    }
+
+    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(loginRequest.getPassword(), this.password);
+    }
 }

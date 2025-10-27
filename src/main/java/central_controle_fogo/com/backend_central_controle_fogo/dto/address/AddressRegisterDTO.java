@@ -1,21 +1,19 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.address;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.Setter;
+import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Empty;
 
 @Data
-public class AddressRegisterUserDTO {
+public class AddressRegisterDTO {
 
     @Size(max = 100, message = "O logradouro aceita no máximo 100 caracteres")
     @NotBlank(message = "Logradouro é obrigatório")
     private String street;
 
+
     @NotNull(message = "O número é obrigatório")
-    private int number;
+    private Integer number;
 
     @Size(max = 100, message = "Complemento deve ter no máximo 100 caracters")
     private String complement;
@@ -34,7 +32,7 @@ public class AddressRegisterUserDTO {
     @NotBlank(message = "O estado é obrigatório")
     private String state;
 
-    @Size(max = 8, message = "O CEP deve ter 8 caracters")
+    @Size(min = 8,max = 8, message = "O CEP deve ter 8 caracters")
     @NotBlank(message = "O CEP é obrigatório")
     private String zipCode;
 }
