@@ -11,12 +11,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("api/auth")
@@ -32,6 +36,26 @@ public class AuthController {
     @Autowired
     private IAuthService authService ;
 
+    @GetMapping("")
+    @Operation(summary = "Buscar informações do usuário.")
+    public ResponseEntity<?> getUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+            Long id = jwtAuth.getToken().getClaim("id");
+            var service = authService.getById(id);
+            if (service == null) {
+                ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(service);
+        }
+
+        return new ResponseEntity<>("Tipo de autenticação inválido", HttpStatus.BAD_REQUEST);
+    }
     @GetMapping(value = "/{id}")
     @Operation(summary = "Buscar usuário por ID")
     public ResponseEntity getById(@PathVariable Long id) {

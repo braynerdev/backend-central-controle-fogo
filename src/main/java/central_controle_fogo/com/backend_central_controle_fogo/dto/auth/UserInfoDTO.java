@@ -1,5 +1,6 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.auth;
 
+import central_controle_fogo.com.backend_central_controle_fogo.dto.patent.PatentResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.auth.UserRoles;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -43,6 +44,8 @@ public class UserInfoDTO {
     private boolean emailConfirmed;
 
     private boolean phoneNumberConfirmed;
+
+    private PatentResponseDTO patent;
 
     private List<UserRolesDTO> userRoles;
 }
