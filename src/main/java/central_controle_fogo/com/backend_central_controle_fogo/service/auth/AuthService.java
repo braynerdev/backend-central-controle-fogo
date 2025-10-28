@@ -185,6 +185,8 @@ public class AuthService implements IAuthService {
                     .issuedAt(now)
                     .expiresAt(now.plusSeconds(expiresIn))
                     .claim("scope", scopes)
+                    .claim("username", user.getUsername())
+                    .claim("id", user.getId())
                     .build();
 
             var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -205,8 +207,7 @@ public class AuthService implements IAuthService {
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         try{
-            var user = userRepository.findByUsername(loginRequest.getUsername()).orElse(null);
-
+            var user = userRepository.findByEmail(loginRequest.getEmail()).orElse(null);
 
             if(user == null){
                 return new LoginResponse(false, "Usuário inixistente");
