@@ -5,6 +5,7 @@ package central_controle_fogo.com.backend_central_controle_fogo.controller;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceOnSiteDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceUpdateDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OcurrenceRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService.OccurrenceService;
 import jakarta.validation.Valid;
@@ -103,6 +104,27 @@ public class OccurrenceController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOccurrence(
+            @PathVariable Long id,
+            @Valid @RequestBody OccurrenceUpdateDTO dto) {
+        try {
+            if (id == null || id < 1) {
+                return new ResponseEntity<>("ID inválido", HttpStatus.BAD_REQUEST);
+            }
+            
+            var response = occurrenceService.updateOccurrence(id, dto);
+            
+            if (!response.isSucesso()) {
+                return new ResponseEntity<>(response.getMensagem(), HttpStatus.BAD_REQUEST);
+            }
+            
+            return new ResponseEntity<>(response.getMensagem(), HttpStatus.OK);
+        }
+        catch (Exception ex) {
+            return new ResponseEntity<>("Erro ao atualizar ocorrência: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @GetMapping("/paginator")
     public ResponseEntity<PaginatorGeneric> getOccurrencePaginator(
             @RequestParam(defaultValue = "1") int page,

@@ -6,6 +6,7 @@ import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.Respo
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceOnSiteDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrencePaginatorDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceUpdateDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OcurrenceRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
@@ -162,6 +163,66 @@ public class OccurrenceService {
         }
     }
 
+    @Transactional
+    public ResponseDTO updateOccurrence(Long id, OccurrenceUpdateDTO dto) {
+        try {
+            Occurrence occurrence = occurrenceRepository.findById(id).orElse(null);
+            if (occurrence == null) {
+                return ResponseDTO.erro("Ocorrência não encontrada!");
+            }
+
+            // Atualizar campos básicos da ocorrência
+            occurrence.setOccurrenceHasVictims(dto.isOccurrenceHasVictims());
+            occurrence.setOccurrenceRequester(dto.getOccurrenceRequester());
+            occurrence.setOccurrenceRequesterPhoneNumber(dto.getOccurrenceRequesterPhoneNumber());
+            occurrence.setOccurrenceSubType(dto.getOccurrenceSubType());
+            occurrence.setOccurrenceDetails(dto.getOccurrenceDetails());
+            occurrence.setLatitude(dto.getLatitude());
+            occurrence.setLongitude(dto.getLongitude());
+            occurrence.setOccurrenceArrivalTime(dto.getOccurrenceArrivalTime());
+
+            // Atualizar endereço
+            if (dto.getAddress() != null) {
+                Address address = occurrence.getAddress();
+                if (address == null) {
+                    address = new Address();
+                    occurrence.setAddress(address);
+                }
+                address.setStreet(dto.getAddress().getStreet());
+                address.setNumber(dto.getAddress().getNumber());
+                address.setComplement(dto.getAddress().getComplement());
+                address.setNeighborhood(dto.getAddress().getNeighborhood());
+                address.setCity(dto.getAddress().getCity());
+                address.setState(dto.getAddress().getState());
+                address.setZipCode(dto.getAddress().getZipCode());
+            }
+
+            // Atualizar usuários se fornecidos
+            if (dto.getUserIds() != null && !dto.getUserIds().isEmpty()) {
+                List<User> users = userRepository.findAllById(dto.getUserIds());
+                if (users.size() != dto.getUserIds().size()) {
+                    return ResponseDTO.erro("Um ou mais usuários não foram encontrados!");
+                }
+
+                // Remover usuários antigos
+                if (occurrence.getUsers() != null) {
+                    occurrenceUsersRepository.deleteAll(occurrence.getUsers());
+                }
+
+                // Adicionar novos usuários
+                List<OccurenceUsers> occurrenceUsers = users.stream()
+                        .map(user -> new OccurenceUsers(occurrence, user))
+                        .collect(Collectors.toList());
+                occurrenceUsersRepository.saveAll(occurrenceUsers);
+            }
+
+            occurrenceRepository.save(occurrence);
+            return ResponseDTO.sucesso("Ocorrência atualizada com sucesso!");
+        }
+        catch (Exception e) {
+            return ResponseDTO.erro("Erro ao atualizar ocorrência: " + e.getMessage());
+        }
+    }
     @Transactional
     public ResponseDTO activateOccurrence(Long id) {
         try {
