@@ -16,13 +16,13 @@ public class OccurrenceMapper {
     // Converte Entidade Occurrence -> OccurrenceResponseDTO
     public OccurrenceResponseDTO toResponseDTO(Occurrence occurrence) {
         OccurrenceResponseDTO dto = new OccurrenceResponseDTO();
-        dto.setId(occurrence.getId());
-        if (occurrence.getCreatedAt() != null) {
-            dto.setCreatedAt(occurrence.getCreatedAt().toLocalDateTime());
-        }
-        if (occurrence.getUpdatedAt() != null) {
-            dto.setUpdatedAt(occurrence.getUpdatedAt().toLocalDateTime());
-        }
+//        dto.setId(occurrence.getId());
+//        if (occurrence.getCreatedAt() != null) {
+//            dto.setCreatedAt(occurrence.getCreatedAt().toLocalDateTime());
+//        }
+//        if (occurrence.getUpdatedAt() != null) {
+//            dto.setUpdatedAt(occurrence.getUpdatedAt().toLocalDateTime());
+//        }
         // Fase 1
         dto.setOccurrenceHasVictims(occurrence.isOccurrenceHasVictims());
         dto.setOccurrenceIsPriority(occurrence.isOccurrenceIsPriority());
@@ -52,13 +52,13 @@ public class OccurrenceMapper {
 
     private OccurrenceSubTypeResponseDTO toSubTypeResponseDTO(OccurrenceSubType subType) {
         OccurrenceSubTypeResponseDTO subDto = new OccurrenceSubTypeResponseDTO();
-        subDto.setId(subType.getId());
+//        subDto.setId(subType.getId());
         subDto.setName(subType.getName());
 
         if (subType.getOccurrenceType() != null) {
             OccurrenceType type = subType.getOccurrenceType();
             OccurrenceTypeResponseDTO typeDto = new OccurrenceTypeResponseDTO();
-            typeDto.setId(type.getId());
+//            typeDto.setId(type.getId());
             typeDto.setName(type.getName());
             subDto.setOccurrenceType(typeDto);
         }
