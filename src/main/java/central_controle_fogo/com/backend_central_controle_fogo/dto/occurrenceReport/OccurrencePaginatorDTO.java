@@ -6,34 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OccurrenceResponseDTO {
+public class OccurrencePaginatorDTO {
     private Long id;
     private boolean occurrenceHasVictims;
     private String occurrenceRequester;
     private String occurrenceRequesterPhoneNumber;
     private String occurrenceSubType;
-    private String occurrenceDetails;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
-    private LocalDateTime occurrenceArrivalTime;
     private OccurrenceStatus status;
-    private OffsetDateTime createDate;
+    private LocalDateTime createDate;
     private boolean active;
-    
-    // Endereço
-    private String zipCode;
-    private String street;
-    private String number;
-    private String neighborhood;
-    private String city;
-    private String state;
-    private String complement;
 }

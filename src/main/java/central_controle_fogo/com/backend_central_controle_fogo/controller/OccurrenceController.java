@@ -3,11 +3,10 @@ package central_controle_fogo.com.backend_central_controle_fogo.controller;
 
 
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceDispatchDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceOnSiteDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OcurrenceRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService.OccurrenceService;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -25,66 +24,102 @@ public class OccurrenceController {
     @Autowired
     private OccurrenceService occurrenceService;
 
-    @GetMapping
-    public ResponseEntity<List<OccurrenceResponseDTO>> getAllOccurrences() {
-        return ResponseEntity.ok(occurrenceService.findAll());
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<OccurrenceResponseDTO> getOccurrenceById(@PathVariable Long id) {
-        return ResponseEntity.ok(occurrenceService.findById(id));
+    public ResponseEntity getById(@PathVariable Long id) {
+        try {
+            if (id == null || id < 1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            var occurrence = this.occurrenceService.getById(id);
+            return occurrence == null ? new ResponseEntity<>("Ocorrência não encontrada!", HttpStatus.NOT_FOUND) : new ResponseEntity<>(occurrence, HttpStatus.OK);
+        }
+        catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    //Etapa 1
     @PostMapping
-    public ResponseEntity<OccurrenceResponseDTO> createOccurrence(
-            @Valid @RequestBody OccurrenceDispatchDTO dto) {
-        OccurrenceResponseDTO createdOccurrence = occurrenceService.createOccurrence(dto);
-        return new ResponseEntity<>(createdOccurrence, HttpStatus.CREATED);
+    public ResponseEntity<?> createOccurrence(
+            @Valid @RequestBody OcurrenceRequestDTO dto) {
+        try{
+            boolean success = occurrenceService.createOccurrence(dto);
+            if(!success){
+                return new ResponseEntity<>("Erro ao criar ocorrência", HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>("Ocorrência criada com sucesso", HttpStatus.CREATED);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    // Etapa 2
-    @PutMapping("/on-site-report/{id}")
-    public ResponseEntity<OccurrenceResponseDTO> addOnSiteReport(
+    @PutMapping("/complete/{id}")
+    public ResponseEntity<?> completeOccurrence(
             @PathVariable Long id,
             @Valid @RequestBody OccurrenceOnSiteDTO dto) {
-        OccurrenceResponseDTO updatedOccurrence = occurrenceService.addOnSiteReport(id, dto);
-        return ResponseEntity.ok(updatedOccurrence);
+        try {
+            if(id < 1){
+                return new ResponseEntity<>("ID inválido", HttpStatus.BAD_REQUEST);
+            }
+            boolean success = occurrenceService.completeOccurrence(id, dto);
+            if(!success){
+                return new ResponseEntity<>("Erro ao completar ocorrência", HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>("Ocorrência completada com sucesso", HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>("Erro: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/deactivate/{id}")
     public ResponseEntity deactivateOccurrence(@PathVariable Long id) {
-        try{
-            if(id < 1){
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        try {
+            if (id == null || id < 1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            var service = occurrenceService.deactivate(id);
-            if (!service){
-                return new ResponseEntity("Ocorrência não encontrada",HttpStatus.NOT_FOUND);
+            var deactivateOccurrence = occurrenceService.deactivateOccurrence(id);
+            if (!deactivateOccurrence.isSucesso()) {
+                return new ResponseEntity<>(deactivateOccurrence.getMensagem(), HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>("Ocorrência desativada com sucesso.", HttpStatus.CREATED);
+            return new ResponseEntity<>(deactivateOccurrence.getMensagem(), HttpStatus.OK);
         }
-        catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        catch (Exception ex) {
+            return new ResponseEntity<>("Erro ao desativar ocorrência!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("/activate/{id}")
     public ResponseEntity activateOccurrence(@PathVariable Long id) {
-        try{
-            if(id < 1){
-                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        try {
+            if (id == null || id < 1) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            var service = occurrenceService.activate(id);
-            if (!service){
-                return new ResponseEntity("Ocorrência não encontrada",HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>("Ocorrência ativada com sucesso.", HttpStatus.CREATED);
+            var service = occurrenceService.activateOccurrence(id);
+            return service.isSucesso() ? new ResponseEntity<>(service.getMensagem(), HttpStatus.OK) : new ResponseEntity<>(service.getMensagem(), HttpStatus.BAD_REQUEST);
         }
-        catch (Exception e){
+        catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @GetMapping("/paginator")
+    public ResponseEntity<PaginatorGeneric> getOccurrencePaginator(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String filterGeneric,
+            @RequestParam(defaultValue = "true") boolean active) {
+        try {
+            Pageable pageable = PageRequest.of(page - 1, size);
+            var service = occurrenceService.GetPaginatorOccurrence(pageable, active, filterGeneric);
 
+            if (service == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(service, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

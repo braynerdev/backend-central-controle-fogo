@@ -23,14 +23,9 @@ import java.util.List;
 @NoArgsConstructor
 public class Occurrence extends Base {
 
-    // DADOS DA FASE 1
     @Column(nullable = false)
     @NotNull(message = "Selecione se há vítimas")
     private boolean occurrenceHasVictims;
-
-    @Column(nullable = false)
-    @NotNull(message = "Selecione se há prioridade no atendimento")
-    private boolean occurrenceIsPriority;
 
     @Column(nullable = false, length = 50)
     @NotBlank(message = "Insira o nome do solicitante")
@@ -40,10 +35,10 @@ public class Occurrence extends Base {
     @NotBlank(message = "Insira o telefone para contato do solicitante")
     private String occurrenceRequesterPhoneNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "occurrence_sub_type_id")
-    @NotNull(message = "O subtipo da ocorrência é obrigatório")
-    private OccurrenceSubType occurrenceSubType;
+
+    @Column(nullable = false, length = 100)
+    @NotBlank(message = "Insira o tipo da ocorrência")
+    private String occurrenceSubType;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
@@ -55,16 +50,13 @@ public class Occurrence extends Base {
     @Column(nullable = false, length = 30)
     private OccurrenceStatus status;
 
-    // DADOS DA FASE 2
-
     @Column(length = 2000)
     private String occurrenceDetails;
-    @Column
-
+    
+    @Column(precision = 10, scale = 7)
     private BigDecimal latitude;
 
-    @Column
-
+    @Column(precision = 11, scale = 7)
     private BigDecimal longitude;
 
     @Column
@@ -74,10 +66,24 @@ public class Occurrence extends Base {
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OccurenceUsers> users;
 
-//    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
-//    private List<OccurrenceVehicles> vehicles;
 
+    public Occurrence(boolean occurrenceHasVictims, String occurrenceRequester, String occurrenceRequesterPhoneNumber, String occurrenceSubType, Address address) {
+        this.occurrenceHasVictims = occurrenceHasVictims;
+        this.occurrenceRequester = occurrenceRequester;
+        this.occurrenceRequesterPhoneNumber = occurrenceRequesterPhoneNumber;
+        this.occurrenceSubType = occurrenceSubType;
+        this.address = address;
+        this.status = OccurrenceStatus.EM_ATENDIMENTO;
+    }
 
+    public Occurrence(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, LocalDateTime occurrenceArrivalTime, List<OccurenceUsers> users) {
+        this.occurrenceDetails = occurrenceDetails;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.occurrenceArrivalTime = occurrenceArrivalTime;
+        this.users = users;
+        this.status = OccurrenceStatus.CONCLUIDA;
+    }
 }
 
 

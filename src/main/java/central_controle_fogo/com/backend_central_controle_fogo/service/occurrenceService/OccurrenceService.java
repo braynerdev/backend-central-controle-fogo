@@ -1,20 +1,24 @@
 package central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService;
 
-
-
-
 import central_controle_fogo.com.backend_central_controle_fogo.Enum.OccurrenceStatus;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceDispatchDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceOnSiteDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrencePaginatorDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OcurrenceRequestDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
+import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.Occurrence;
+import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurenceUsers;
 
-import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceSubType;
-
+import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IRepositoryUser;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceRepository;
-import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceSubTypeRepository;
-import org.springdoc.api.OpenApiResourceNotFoundException;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceUsersRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,123 +32,152 @@ public class OccurrenceService {
     private OccurrenceRepository occurrenceRepository;
 
     @Autowired
-    private OccurrenceSubTypeRepository subTypeRepository;
+    private OccurrenceUsersRepository occurrenceUsersRepository;
 
     @Autowired
-    private OccurrenceMapper occurrenceMapper;
+    private IRepositoryUser userRepository;
 
-    @Transactional(readOnly = true)
-    public List<OccurrenceResponseDTO> findAll() {
-        return occurrenceRepository.findAll()
-                .stream()
-                .map(occurrenceMapper::toResponseDTO)
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Transactional
+    public OccurrenceResponseDTO getById(Long id) {
+        try {
+            Occurrence occurrence = occurrenceRepository.findById(id).orElse(null);
+            if (occurrence == null) {
+                return null;
+            }
+
+            OccurrenceResponseDTO dto = modelMapper.map(occurrence, OccurrenceResponseDTO.class);
+            dto.setCreateDate(occurrence.getCreatedAt());
+            
+            if (occurrence.getAddress() != null) {
+                dto.setZipCode(occurrence.getAddress().getZipCode());
+                dto.setStreet(occurrence.getAddress().getStreet());
+                dto.setNumber(String.valueOf(occurrence.getAddress().getNumber()));
+                dto.setNeighborhood(occurrence.getAddress().getNeighborhood());
+                dto.setCity(occurrence.getAddress().getCity());
+                dto.setState(occurrence.getAddress().getState());
+                dto.setComplement(occurrence.getAddress().getComplement());
+            }
+
+            return dto;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Transactional
+    public boolean createOccurrence(OcurrenceRequestDTO dto) {
+        try{
+            Address address = modelMapper.map(dto.getAddress(), Address.class);
+            
+            Occurrence occurrence = new Occurrence(
+                dto.isOccurrenceHasVictims(),
+                dto.getOccurrenceRequester(),
+                dto.getOccurrenceRequesterPhoneNumber(),
+                dto.getOccurrenceSubType(),
+                address
+            );
+
+            occurrenceRepository.save(occurrence);
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Transactional
+    public boolean completeOccurrence(Long occurrenceId, OccurrenceOnSiteDTO dto) {
+        try {
+            Occurrence occurrence = occurrenceRepository.findById(occurrenceId)
+                .orElseThrow(() -> new RuntimeException("Ocorrência não encontrada"));
+
+            List<User> users = userRepository.findAllById(dto.getUserIds());
+            
+            if (users.size() != dto.getUserIds().size()) {
+                throw new RuntimeException("Um ou mais usuários não foram encontrados");
+            }
+
+            occurrence.setOccurrenceDetails(dto.getOccurrenceDetails());
+            occurrence.setLatitude(dto.getLatitude());
+            occurrence.setLongitude(dto.getLongitude());
+            occurrence.setOccurrenceArrivalTime(dto.getOccurrenceArrivalTime());
+            occurrence.setStatus(OccurrenceStatus.CONCLUIDA);
+
+            occurrenceRepository.save(occurrence);
+
+            List<OccurenceUsers> occurrenceUsers = users.stream()
+                .map(user -> new OccurenceUsers(occurrence, user))
                 .collect(Collectors.toList());
-    }
 
-    @Transactional(readOnly = true)
-    public OccurrenceResponseDTO findById(Long id) {
-        Occurrence occurrence = occurrenceRepository.findById(id)
-                .orElseThrow(() -> new OpenApiResourceNotFoundException("Ocorrência não encontrada com ID: " + id));
-        return occurrenceMapper.toResponseDTO(occurrence);
-    }
-
-    // MÉTODO 1: ATENDENTE CRIA (Etapa 1)
-    @Transactional
-    public OccurrenceResponseDTO createOccurrence(OccurrenceDispatchDTO dto) {
-        OccurrenceSubType subType = subTypeRepository.findById(dto.getOccurrenceSubTypeId())
-                .orElseThrow(() -> new OpenApiResourceNotFoundException("SubTipo de ocorrência não encontrado com ID: " + dto.getOccurrenceSubTypeId()));
-
-        Occurrence occurrence = new Occurrence();
-
-        // Mapeia os dados da Etapa 1
-        mapDispatchDtoToEntity(dto, occurrence, subType);
-
-        // Define o STATUS INICIAL
-        occurrence.setStatus(OccurrenceStatus.AGUARDANDO_ATENDIMENTO);
-
-        Occurrence savedOccurrence = occurrenceRepository.save(occurrence);
-        return occurrenceMapper.toResponseDTO(savedOccurrence);
-    }
-
-    // Etapa 2
-    @Transactional
-    public OccurrenceResponseDTO addOnSiteReport(Long id, OccurrenceOnSiteDTO dto) {
-        Occurrence occurrence = occurrenceRepository.findById(id)
-                .orElseThrow(() -> new OpenApiResourceNotFoundException("Ocorrência não encontrada com ID: " + id));
-
-        // Regra de Negócio: Verifica se já não está finalizada
-        if (occurrence.getStatus() == OccurrenceStatus.CONCLUIDA ||
-                occurrence.getStatus() == OccurrenceStatus.CANCELADA ||
-                occurrence.getStatus() == OccurrenceStatus.FALSO_ALARME) {
-            throw new IllegalStateException("Ocorrência já finalizada (status: " + occurrence.getStatus() + ")");
-        }
-
-        // Valida o status final
-        if (dto.getFinalStatus() != OccurrenceStatus.CONCLUIDA &&
-                dto.getFinalStatus() != OccurrenceStatus.FALSO_ALARME) {
-            throw new IllegalArgumentException("O status final deve ser CONCLUIDA ou FALSO_ALARME.");
-        }
-
-        // Mapeia os dados da Etapa 2
-        occurrence.setOccurrenceDetails(dto.getOccurrenceDetails());
-        occurrence.setLatitude(dto.getLatitude());
-        occurrence.setLongitude(dto.getLongitude());
-        occurrence.setOccurrenceArrivalTime(dto.getOccurrenceArrivalTime());
-//        occurrence.setInvolvedPeople(dto.getInvolvedPeople());
-//        occurrence.setInvolvedVehicles(dto.getInvolvedVehicles());
-
-        occurrence.setStatus(dto.getFinalStatus()); // Define o status final
-
-        Occurrence updatedOccurrence = occurrenceRepository.save(occurrence);
-        return occurrenceMapper.toResponseDTO(updatedOccurrence);
-    }
-
-    @Transactional
-    public boolean deactivate(Long id) {
-        try{
-            var occurence = occurrenceRepository.findById(id).orElse(null);
-            if (occurence == null) {
-                return false;
-            }
-            occurence.setActive(false);
-            occurrenceRepository.save(occurence);
+            occurrenceUsersRepository.saveAll(occurrenceUsers);
             return true;
         }
         catch (Exception e) {
-            return false;
+            throw new RuntimeException("Erro ao completar ocorrência: " + e.getMessage(), e);
         }
-
     }
 
     @Transactional
-    public boolean activate(Long id) {
-        try{
-            var occurence = occurrenceRepository.findById(id).orElse(null);
-            if (occurence == null) {
-                return false;
+    public PaginatorGeneric<OccurrencePaginatorDTO> GetPaginatorOccurrence(Pageable pageable, boolean active, String filterGeneric) {
+        Page<Occurrence> paginator = occurrenceRepository.findAll(pageable);
+
+        List<OccurrencePaginatorDTO> filterList = paginator.stream()
+                .map(o -> modelMapper.map(o, OccurrencePaginatorDTO.class))
+                .filter(o -> {
+                    boolean matches = true;
+                    if (filterGeneric != null && !filterGeneric.isEmpty()) {
+                        String requester = o.getOccurrenceRequester() != null ? o.getOccurrenceRequester().toUpperCase() : "";
+                        String subType = o.getOccurrenceSubType() != null ? o.getOccurrenceSubType().toUpperCase() : "";
+                        matches = requester.contains(filterGeneric.toUpperCase()) || subType.contains(filterGeneric.toUpperCase());
+                    }
+                    matches &= o.isActive() == active;
+                    return matches;
+                })
+                .collect(Collectors.toList());
+
+        return new PaginatorGeneric<>(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                filterList.size(),
+                filterList
+        );
+    }
+
+    @Transactional
+    public ResponseDTO deactivateOccurrence(Long id) {
+        try {
+            var occurrence = occurrenceRepository.findById(id).orElse(null);
+            if (occurrence == null) {
+                return ResponseDTO.erro("Ocorrência não encontrada");
             }
-            if (occurence.isActive()) {
-                return false;
-            }
-            occurence.setActive(true);
-            occurrenceRepository.save(occurence);
-            return true;
+            occurrence.setActive(false);
+            var saved = occurrenceRepository.save(occurrence);
+            return saved != null ? ResponseDTO.sucesso("Ocorrência desativada com sucesso!") : ResponseDTO.erro("Erro ao desativar ocorrência!");
         }
         catch (Exception e) {
-            return false;
+            return ResponseDTO.erro("Erro ao desativar ocorrência!");
         }
-
     }
 
-    // Mapeia os dados da Etapa 1
-    private void mapDispatchDtoToEntity(OccurrenceDispatchDTO dto, Occurrence occurrence, OccurrenceSubType subType) {
-        occurrence.setOccurrenceHasVictims(dto.getOccurrenceHasVictims());
-        occurrence.setOccurrenceIsPriority(dto.getOccurrenceIsPriority());
-        occurrence.setOccurrenceRequester(dto.getOccurrenceRequester());
-        occurrence.setOccurrenceRequesterPhoneNumber(dto.getOccurrenceRequesterPhoneNumber());
-        occurrence.setAddress(dto.getAddress());
-        occurrence.setOccurrenceSubType(subType);
+    @Transactional
+    public ResponseDTO activateOccurrence(Long id) {
+        try {
+            var occurrence = occurrenceRepository.findById(id).orElse(null);
+            if (occurrence == null) {
+                return ResponseDTO.erro("Ocorrência não encontrada!");
+            }
+            if (occurrence.isActive()) {
+                return ResponseDTO.erro("Ocorrência já está ativa!");
+            }
+            occurrence.setActive(true);
+            occurrenceRepository.save(occurrence);
+            return ResponseDTO.sucesso("Ocorrência ativada com sucesso!");
+        }
+        catch (Exception e) {
+            return ResponseDTO.erro("Erro ao ativar ocorrência");
+        }
     }
-
-
 }
