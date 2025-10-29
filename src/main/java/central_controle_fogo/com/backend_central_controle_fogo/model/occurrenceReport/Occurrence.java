@@ -74,11 +74,10 @@ public class Occurrence extends Base {
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OccurenceUsers> users;
 
-    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<OccurrenceVehicles> vehicles;
+//    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
+//    private List<OccurrenceVehicles> vehicles;
 
-    @Column(length = 500)
-    private String emergencyVehicles;
+
 }
 
 

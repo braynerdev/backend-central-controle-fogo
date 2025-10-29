@@ -45,7 +45,7 @@ public class OccurrenceMapper {
         dto.setOccurrenceArrivalTime(occurrence.getOccurrenceArrivalTime());
 //        dto.setInvolvedPeople(occurrence.getInvolvedPeople());
 //        dto.setInvolvedVehicles(occurrence.getInvolvedVehicles());
-        dto.setEmergencyVehicles(occurrence.getEmergencyVehicles());
+
 
         return dto;
     }

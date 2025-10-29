@@ -2,12 +2,16 @@ package central_controle_fogo.com.backend_central_controle_fogo.controller;
 
 
 
+import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceDispatchDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceOnSiteDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService.OccurrenceService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +44,7 @@ public class OccurrenceController {
     }
 
     // Etapa 2
-    @PutMapping("/{id}/on-site-report")
+    @PutMapping("/on-site-report/{id}")
     public ResponseEntity<OccurrenceResponseDTO> addOnSiteReport(
             @PathVariable Long id,
             @Valid @RequestBody OccurrenceOnSiteDTO dto) {
@@ -81,4 +85,6 @@ public class OccurrenceController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }
