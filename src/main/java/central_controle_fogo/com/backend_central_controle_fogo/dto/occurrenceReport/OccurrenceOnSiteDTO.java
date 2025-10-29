@@ -2,10 +2,13 @@ package central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceRe
 
 
 import central_controle_fogo.com.backend_central_controle_fogo.Enum.OccurrenceStatus;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
+//import central_controle_fogo.com.backend_central_controle_fogo.model.vehicles.Vehicle;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class OccurrenceOnSiteDTO {
@@ -25,14 +28,10 @@ public class OccurrenceOnSiteDTO {
     @NotNull(message = "A hora da chegada é obrigatória")
     private LocalDateTime occurrenceArrivalTime;
 
-    @Size(max = 500)
-    private String involvedPeople;
 
-    @Size(max = 500)
-    private String involvedVehicles;
+    private List<User> userIds;
 
-    @Size(max = 500)
-    private String emergencyVehicles;
+//    private List<Vehicle> vehicleIds;
 
     @NotNull(message = "É obrigatório definir um status final (ex: CONCLUIDA, FALSO_ALARME)")
     private OccurrenceStatus finalStatus;

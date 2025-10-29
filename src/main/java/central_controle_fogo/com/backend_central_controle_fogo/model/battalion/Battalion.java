@@ -3,7 +3,7 @@ package central_controle_fogo.com.backend_central_controle_fogo.model.battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
-import central_controle_fogo.com.backend_central_controle_fogo.model.vehicles.Vehicle;
+//import central_controle_fogo.com.backend_central_controle_fogo.model.vehicles.Vehicle;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -40,9 +40,9 @@ public class Battalion extends Base {
 
     @OneToMany(mappedBy = "battalion", cascade = CascadeType.REMOVE)
     private List<User> users;
-
-    @OneToMany(mappedBy = "battalion", cascade = CascadeType.REMOVE)
-    private List<Vehicle> battalions;
+//
+//    @OneToMany(mappedBy = "battalion", cascade = CascadeType.REMOVE)
+//    private List<Vehicle> battalions;
 
     public Battalion(String name, String phoneNumber,  String email) {
         this.name = name;

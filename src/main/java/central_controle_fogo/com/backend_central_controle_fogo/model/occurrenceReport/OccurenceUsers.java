@@ -26,4 +26,8 @@ public class OccurenceUsers extends Base {
     @JoinColumn(name = "occurence_id", nullable = false)
     private Occurrence occurrence;
 
+    public OccurenceUsers(Occurrence occurrence, User user) {
+        this.occurrence = occurrence;
+        this.user = user;
+    }
 }

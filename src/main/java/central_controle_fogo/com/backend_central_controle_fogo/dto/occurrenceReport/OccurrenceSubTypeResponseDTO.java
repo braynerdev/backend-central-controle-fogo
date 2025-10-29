@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class OccurrenceSubTypeResponseDTO {
-    private Long id;
+
     private String name;
     private OccurrenceTypeResponseDTO occurrenceType;
 }

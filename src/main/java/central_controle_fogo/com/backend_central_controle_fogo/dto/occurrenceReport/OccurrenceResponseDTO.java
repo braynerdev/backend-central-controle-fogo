@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class OccurrenceResponseDTO {
-    private Long id;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
+//    private LocalDateTime createdAt
+//    private LocalDateTime updatedAt;
 
     // Campos da Fase 1
     private boolean occurrenceHasVictims;
@@ -29,6 +29,6 @@ public class OccurrenceResponseDTO {
     private BigDecimal longitude;
     private LocalDateTime occurrenceArrivalTime;
     private String involvedPeople;
-    private String involvedVehicles;
-    private String emergencyVehicles;
+    //    private String involvedVehicles;
+
 }

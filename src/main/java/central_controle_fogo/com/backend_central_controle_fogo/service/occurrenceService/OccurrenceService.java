@@ -92,7 +92,7 @@ public class OccurrenceService {
         occurrence.setOccurrenceArrivalTime(dto.getOccurrenceArrivalTime());
 //        occurrence.setInvolvedPeople(dto.getInvolvedPeople());
 //        occurrence.setInvolvedVehicles(dto.getInvolvedVehicles());
-        occurrence.setEmergencyVehicles(dto.getEmergencyVehicles());
+
         occurrence.setStatus(dto.getFinalStatus()); // Define o status final
 
         Occurrence updatedOccurrence = occurrenceRepository.save(occurrence);
@@ -145,4 +145,6 @@ public class OccurrenceService {
         occurrence.setAddress(dto.getAddress());
         occurrence.setOccurrenceSubType(subType);
     }
+
+
 }
