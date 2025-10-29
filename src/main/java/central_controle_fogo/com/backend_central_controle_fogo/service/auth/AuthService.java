@@ -213,7 +213,7 @@ public class AuthService implements IAuthService {
                 return new LoginResponse(false, "Usuário inixistente");
             }
 
-            if (user.isLoginCorrect(loginRequest, passwordEncoder)) {
+            if (!user.isLoginCorrect(loginRequest, passwordEncoder)) {
                 return new LoginResponse(false, "Username ou senha iválido");
             }
 
