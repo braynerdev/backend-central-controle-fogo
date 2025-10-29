@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class OccurrenceResponseDTO {
 
-//    private LocalDateTime createdAt;
+//    private LocalDateTime createdAt
 //    private LocalDateTime updatedAt;
 
     // Campos da Fase 1
