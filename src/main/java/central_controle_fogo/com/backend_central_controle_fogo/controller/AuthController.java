@@ -163,7 +163,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout/{id}")
-    public ResponseEntity logout(@RequestParam Long id) {
+    public ResponseEntity logout(@PathVariable Long id) {
         try{
             var accessToken = authService.logout(id);
             if (!accessToken) {

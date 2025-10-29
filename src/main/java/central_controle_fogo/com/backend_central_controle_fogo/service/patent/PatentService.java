@@ -1,5 +1,6 @@
 package central_controle_fogo.com.backend_central_controle_fogo.service.patent;
 
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.PatentResponseAllDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.UserPaginatorDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
@@ -39,6 +40,8 @@ public class PatentService implements IPatentService{
         }
     }
 
+
+
     @Override
     public PatentResponseDTO updatePatent(Long id, PatentResquestDTO patentResquestDTO) {
         var repositoryPatent = patentRepository.findById(id).orElse(null);
@@ -58,6 +61,26 @@ public class PatentService implements IPatentService{
             return null;
         }
         return modelMapper.map(repositoryPatent,PatentResponseDTO.class);
+    }
+
+    @Override
+    public PatentResponseAllDTO getAllPatents() {
+        try{
+            var repositoryPatent = patentRepository.findAll();
+            
+            if(repositoryPatent == null || repositoryPatent.isEmpty()){
+                return new PatentResponseAllDTO();
+            }
+            
+            List<PatentResponseDTO> patentList = repositoryPatent.stream()
+                    .map(patent -> modelMapper.map(patent, PatentResponseDTO.class))
+                    .collect(Collectors.toList());
+            
+            return new PatentResponseAllDTO(patentList);
+        }
+        catch(Exception e){
+            return new PatentResponseAllDTO();
+        }
     }
 
     @Override

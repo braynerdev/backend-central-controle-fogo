@@ -1,5 +1,6 @@
 package central_controle_fogo.com.backend_central_controle_fogo.service.patent;
 
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.PatentResponseAllDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.UserPaginatorDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
@@ -9,10 +10,13 @@ import central_controle_fogo.com.backend_central_controle_fogo.model.patent.Pate
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface IPatentService{
     PatentResponseDTO createdPatent(PatentResquestDTO patentResquestDTO);
     PatentResponseDTO updatePatent(Long id,PatentResquestDTO patentResquestDTO);
     PatentResponseDTO getByIdPatent(Long id);
+    PatentResponseAllDTO getAllPatents();
     PaginatorGeneric<PatentResponseDTO> GetPaginatorPatent(Pageable pageable, boolean active, String filterGeneric);
     ResponseDTO DeactivatePatent(Long id);
     ResponseDTO ActivatePatent(Long id);

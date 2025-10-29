@@ -1,6 +1,7 @@
 package central_controle_fogo.com.backend_central_controle_fogo.controller;
 
 
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.PatentResponseAllDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.patent.PatentResquestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.service.patent.PatentService;
@@ -101,6 +102,23 @@ public class PatentController {
             if (service == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+            return new ResponseEntity<>(service, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "")
+    @Operation(summary = "Pegar todas as patentes")
+    public ResponseEntity<PatentResponseAllDTO> getAllPatents() {
+        try {
+            var service = patentService.getAllPatents();
+
+            if (service == null || service.getPatentResponseDTOList() == null || service.getPatentResponseDTOList().isEmpty()) {
+                return new ResponseEntity<>(new PatentResponseAllDTO(), HttpStatus.OK);
+            }
+            
             return new ResponseEntity<>(service, HttpStatus.OK);
         }
         catch (Exception e) {
