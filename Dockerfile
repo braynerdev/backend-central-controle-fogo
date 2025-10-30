@@ -6,8 +6,13 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Copy source code and build
+# Copy source code
 COPY src ./src
+
+# Copy application properties for Render
+COPY src/main/resources/application.properties.render src/main/resources/application.properties
+
+# Build the application
 RUN mvn clean package -DskipTests
 
 # Runtime stage
