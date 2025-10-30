@@ -6,7 +6,7 @@ jwt.private.key=classpath:app.key
 spring.application.name=backend-central-controle-fogo
 
 # Server port
-server.port=8080
+server.port=8088
 
 # Database configuration
 spring.datasource.url=jdbc:postgresql://localhost:5432/central_controle_fogo
