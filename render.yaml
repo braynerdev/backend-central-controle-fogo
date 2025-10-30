@@ -1,10 +1,8 @@
 services:
   - type: web
     name: backend-central-controle-fogo
-    env: java
+    env: docker
     region: oregon
-    buildCommand: ./build.sh
-    startCommand: java -jar target/backend-central-controle-fogo-0.0.1-SNAPSHOT.jar
     envVars:
       - key: JAVA_VERSION
         value: 21
