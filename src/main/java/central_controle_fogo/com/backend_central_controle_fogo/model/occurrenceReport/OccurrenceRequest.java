@@ -2,7 +2,6 @@ package central_controle_fogo.com.backend_central_controle_fogo.model.occurrence
 
 import central_controle_fogo.com.backend_central_controle_fogo.Enum.OccurrenceStatus;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
-import central_controle_fogo.com.backend_central_controle_fogo.model.auth.UserRoles;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import jakarta.persistence.*;
 
@@ -21,8 +20,9 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Occurrence extends Base {
+public class OccurrenceRequest extends Base {
 
+    // primeira parte
     @Column(nullable = false)
     @NotNull(message = "Selecione se há vítimas")
     private boolean occurrenceHasVictims;
@@ -45,11 +45,12 @@ public class Occurrence extends Base {
     @NotNull(message = "O endereço é obrigatório")
     private Address address;
 
-
+    // nos dois
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private OccurrenceStatus status;
 
+    // segunda parte
     @Column(length = 2000)
     private String occurrenceDetails;
     
@@ -67,7 +68,8 @@ public class Occurrence extends Base {
     private List<OccurenceUsers> users;
 
 
-    public Occurrence(boolean occurrenceHasVictims, String occurrenceRequester, String occurrenceRequesterPhoneNumber, String occurrenceSubType, Address address) {
+    // primeira
+    public OccurrenceRequest(boolean occurrenceHasVictims, String occurrenceRequester, String occurrenceRequesterPhoneNumber, String occurrenceSubType, Address address) {
         this.occurrenceHasVictims = occurrenceHasVictims;
         this.occurrenceRequester = occurrenceRequester;
         this.occurrenceRequesterPhoneNumber = occurrenceRequesterPhoneNumber;
@@ -76,7 +78,8 @@ public class Occurrence extends Base {
         this.status = OccurrenceStatus.EM_ATENDIMENTO;
     }
 
-    public Occurrence(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, LocalDateTime occurrenceArrivalTime, List<OccurenceUsers> users) {
+    //  segunda
+    public OccurrenceRequest(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, LocalDateTime occurrenceArrivalTime, List<OccurenceUsers> users) {
         this.occurrenceDetails = occurrenceDetails;
         this.latitude = latitude;
         this.longitude = longitude;
