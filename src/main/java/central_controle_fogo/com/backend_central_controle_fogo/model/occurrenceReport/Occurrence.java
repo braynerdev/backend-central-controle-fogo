@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OccurrenceRequest extends Base {
+public class Occurrence extends Base {
 
     // primeira parte
     @Column(nullable = false)
@@ -36,9 +36,10 @@ public class OccurrenceRequest extends Base {
     private String occurrenceRequesterPhoneNumber;
 
 
-    @Column(nullable = false, length = 100)
-    @NotBlank(message = "Insira o tipo da ocorrência")
-    private String occurrenceSubType;
+    @ManyToOne
+    @JoinColumn(name = "occurrence_sub_type_id", nullable = false)
+    @NotNull(message = "Insira o tipo da ocorrência")
+    private OccurrenceSubType occurrenceSubType;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
@@ -63,13 +64,15 @@ public class OccurrenceRequest extends Base {
     @Column
     private LocalDateTime occurrenceArrivalTime;
 
+    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OccurrenceVehicles> occurrenceVehicles;
 
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OccurenceUsers> users;
 
 
     // primeira
-    public OccurrenceRequest(boolean occurrenceHasVictims, String occurrenceRequester, String occurrenceRequesterPhoneNumber, String occurrenceSubType, Address address) {
+    public Occurrence(boolean occurrenceHasVictims, String occurrenceRequester, String occurrenceRequesterPhoneNumber, OccurrenceSubType occurrenceSubType, Address address) {
         this.occurrenceHasVictims = occurrenceHasVictims;
         this.occurrenceRequester = occurrenceRequester;
         this.occurrenceRequesterPhoneNumber = occurrenceRequesterPhoneNumber;
@@ -79,7 +82,7 @@ public class OccurrenceRequest extends Base {
     }
 
     //  segunda
-    public OccurrenceRequest(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, LocalDateTime occurrenceArrivalTime, List<OccurenceUsers> users) {
+    public Occurrence(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, LocalDateTime occurrenceArrivalTime, List<OccurenceUsers> users) {
         this.occurrenceDetails = occurrenceDetails;
         this.latitude = latitude;
         this.longitude = longitude;

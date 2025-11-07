@@ -24,9 +24,9 @@ public class OccurenceUsers extends Base {
 
     @ManyToOne
     @JoinColumn(name = "occurence_id", nullable = false)
-    private OccurrenceRequest occurrence;
+    private Occurrence occurrence;
 
-    public OccurenceUsers(OccurrenceRequest occurrence, User user) {
+    public OccurenceUsers(Occurrence occurrence, User user) {
         this.occurrence = occurrence;
         this.user = user;
     }

@@ -1,0 +1,9 @@
+package central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService;
+
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceRequestDTO;
+
+public interface IOccurrenceService {
+    public OccurrenceResponseDTO registerOccurence(OccurrenceRequestDTO occurrenceRequestDTO);
+
+}

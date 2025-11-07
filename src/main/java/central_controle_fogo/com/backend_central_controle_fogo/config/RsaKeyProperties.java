@@ -28,18 +28,15 @@ public class RsaKeyProperties {
     @Value("${jwt.private.key:#{null}}")
     private Resource privateKeyResource;
 
-    /**
-     * Loads the RSA public key from environment variable (base64) or from classpath resource.
-     * Priority: base64 environment variable > classpath resource
-     */
+   
     public RSAPublicKey getPublicKey() throws Exception {
         try {
-            // Try loading from base64 environment variable first
+            
             if (publicKeyBase64 != null && !publicKeyBase64.isEmpty()) {
                 return loadPublicKeyFromBase64(publicKeyBase64);
             }
 
-            // Fallback to classpath resource
+
             if (publicKeyResource != null && publicKeyResource.exists()) {
                 return loadPublicKeyFromResource(publicKeyResource);
             }
@@ -50,18 +47,14 @@ public class RsaKeyProperties {
         }
     }
 
-    /**
-     * Loads the RSA private key from environment variable (base64) or from classpath resource.
-     * Priority: base64 environment variable > classpath resource
-     */
+
     public RSAPrivateKey getPrivateKey() throws Exception {
         try {
-            // Try loading from base64 environment variable first
+            
             if (privateKeyBase64 != null && !privateKeyBase64.isEmpty()) {
                 return loadPrivateKeyFromBase64(privateKeyBase64);
             }
 
-            // Fallback to classpath resource
             if (privateKeyResource != null && privateKeyResource.exists()) {
                 return loadPrivateKeyFromResource(privateKeyResource);
             }

@@ -315,5 +315,3 @@ Este projeto é desenvolvido para fins acadêmicos em parceria institucional.
 Para questões técnicas ou dúvidas, consulte a documentação completa na pasta `docs/` ou entre em contato com a equipe de desenvolvimento.
 
 ---
-
-**Desenvolvido com ❤️ para o Corpo de Bombeiros de Pernambuco**

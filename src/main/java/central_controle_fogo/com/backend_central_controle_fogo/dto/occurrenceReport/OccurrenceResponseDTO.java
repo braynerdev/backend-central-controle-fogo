@@ -1,6 +1,7 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport;
 
 import central_controle_fogo.com.backend_central_controle_fogo.Enum.OccurrenceStatus;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.address.AddressResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,8 @@ public class OccurrenceResponseDTO {
     private boolean occurrenceHasVictims;
     private String occurrenceRequester;
     private String occurrenceRequesterPhoneNumber;
-    private String occurrenceSubType;
+    private OccurrenceSubtypeDTO occurrenceSubType;
+
     private String occurrenceDetails;
     private BigDecimal latitude;
     private BigDecimal longitude;
@@ -28,12 +30,5 @@ public class OccurrenceResponseDTO {
     private OffsetDateTime createDate;
     private boolean active;
     
-    // Endereço
-    private String zipCode;
-    private String street;
-    private String number;
-    private String neighborhood;
-    private String city;
-    private String state;
-    private String complement;
+    private AddressResponseDTO address;
 }

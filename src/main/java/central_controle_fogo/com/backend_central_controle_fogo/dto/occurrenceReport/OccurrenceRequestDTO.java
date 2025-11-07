@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OcurrenceRequestDTO {
+public class OccurrenceRequestDTO {
     @NotNull(message = "Selecione se há vítimas")
     private boolean occurrenceHasVictims;
 
@@ -24,8 +24,8 @@ public class OcurrenceRequestDTO {
     @NotBlank(message = "Insira o telefone para contato do solicitante")
     private String occurrenceRequesterPhoneNumber;
 
-    @NotBlank(message = "Insira o tipo da ocorrência")
-    private String occurrenceSubType;
+    @NotNull(message = "Insira o subtipo")
+    private Long occurrenceSubType;
 
     @NotNull(message = "O endereço é obrigatório")
     @Valid
