@@ -1,9 +1,12 @@
 package central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService;
 
-import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceResponseDTO;
-import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceRequestDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceFirst.OccurrenceFirstRequestDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceFirst.OccurrenceFirstResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceSecond.OccurrenceSecondRequestDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceSecond.OccurrenceSecondResponseDTO;
 
 public interface IOccurrenceService {
-    public OccurrenceResponseDTO registerOccurence(OccurrenceRequestDTO occurrenceRequestDTO);
-
+    public OccurrenceFirstResponseDTO registerOccurence(OccurrenceFirstRequestDTO occurrenceFirstRequestDTO);
+    public OccurrenceSecondResponseDTO registerComplement(OccurrenceSecondRequestDTO occurrenceSecondRequestDTO);
+    public OccurrenceSecondResponseDTO getOccurrenceById(Long id);
 }

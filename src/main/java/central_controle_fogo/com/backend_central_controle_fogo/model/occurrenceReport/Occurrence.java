@@ -1,8 +1,8 @@
 package central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport;
 
-import central_controle_fogo.com.backend_central_controle_fogo.Enum.OccurrenceStatus;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
+
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +13,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
@@ -47,8 +48,7 @@ public class Occurrence extends Base {
     private Address address;
 
     // nos dois
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @ManyToOne
     private OccurrenceStatus status;
 
     // segunda parte
@@ -62,33 +62,34 @@ public class Occurrence extends Base {
     private BigDecimal longitude;
 
     @Column
-    private LocalDateTime occurrenceArrivalTime;
+    private OffsetDateTime occurrenceArrivalTime;
 
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OccurrenceVehicles> occurrenceVehicles;
 
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<OccurenceUsers> users;
+    private List<OccurrenceUsers> users;
 
 
     // primeira
-    public Occurrence(boolean occurrenceHasVictims, String occurrenceRequester, String occurrenceRequesterPhoneNumber, OccurrenceSubType occurrenceSubType, Address address) {
+    public Occurrence(boolean occurrenceHasVictims, String occurrenceRequester, String occurrenceRequesterPhoneNumber, OccurrenceSubType occurrenceSubType, Address address, OccurrenceStatus status) {
         this.occurrenceHasVictims = occurrenceHasVictims;
         this.occurrenceRequester = occurrenceRequester;
         this.occurrenceRequesterPhoneNumber = occurrenceRequesterPhoneNumber;
         this.occurrenceSubType = occurrenceSubType;
         this.address = address;
-        this.status = OccurrenceStatus.EM_ATENDIMENTO;
+        this.status = status;
     }
 
     //  segunda
-    public Occurrence(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, LocalDateTime occurrenceArrivalTime, List<OccurenceUsers> users) {
+    public Occurrence(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, OffsetDateTime occurrenceArrivalTime, List<OccurrenceUsers> users, List<OccurrenceVehicles> occurrenceVehicles, OccurrenceStatus status) {
         this.occurrenceDetails = occurrenceDetails;
         this.latitude = latitude;
         this.longitude = longitude;
         this.occurrenceArrivalTime = occurrenceArrivalTime;
         this.users = users;
-        this.status = OccurrenceStatus.CONCLUIDA;
+        this.occurrenceVehicles = occurrenceVehicles;
+        this.status = status;
     }
 }
 

@@ -1,6 +1,5 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.vehicle;
 
-import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +17,7 @@ public class VehicleResponseDTO {
 
     private String name;
 
-    private Battalion battalion;
+    private Long battalionId;
+    
+    private String battalionName;
 }

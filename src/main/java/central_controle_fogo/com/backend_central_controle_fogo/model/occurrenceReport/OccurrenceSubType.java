@@ -24,13 +24,4 @@ public class OccurrenceSubType extends Base {
     @ManyToOne
     @JoinColumn(name = "occurrence_type_id", nullable = false)
     private OccurrenceType occurrenceType;
-
-    @OneToMany(mappedBy = "occurrenceSubType")
-    private List<Occurrence> occurrences;
-
-    public OccurrenceSubType(String name, OccurrenceType occurrenceType) {
-        this.name = name;
-        this.occurrenceType = occurrenceType;
-    }
-
 }

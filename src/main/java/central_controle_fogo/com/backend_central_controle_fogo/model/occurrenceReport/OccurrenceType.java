@@ -2,10 +2,7 @@ package central_controle_fogo.com.backend_central_controle_fogo.model.occurrence
 
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -27,13 +24,6 @@ public class OccurrenceType extends Base {
     @Size(max = 100, message = "Tipo de ocorrência pode ter no máximo 100 caracters")
     private String name;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "occurrenceType")
-    private List<OccurrenceSubType> OccurrenceSubType;
-
-    public OccurrenceType(String name) {
-
-        this.name = name;
-    }
-
+    @ManyToOne
+    private OccurrenceNature nature;
 }

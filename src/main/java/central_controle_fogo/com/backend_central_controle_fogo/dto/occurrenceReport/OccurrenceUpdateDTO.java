@@ -1,6 +1,6 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport;
 
-import central_controle_fogo.com.backend_central_controle_fogo.Enum.OccurrenceStatus;
+import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceStatus;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.address.AddressRegisterDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
