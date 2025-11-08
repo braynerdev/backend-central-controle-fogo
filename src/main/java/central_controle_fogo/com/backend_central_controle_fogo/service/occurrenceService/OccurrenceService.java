@@ -1,12 +1,18 @@
 package central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService;
 
 
+import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.UserPaginatorDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.UserResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrencePaginatorDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceUpdateDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceFirst.OccurrenceFirstRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceFirst.OccurrenceFirstResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceSecond.OccurrenceSecondRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceSecond.OccurrenceSecondResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.vehicle.VehicleResponseDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceUsers;
 import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.Occurrence;
@@ -16,9 +22,16 @@ import central_controle_fogo.com.backend_central_controle_fogo.repository.occurr
 import central_controle_fogo.com.backend_central_controle_fogo.repository.vehicle.IVehicleRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OccurrenceService implements IOccurrenceService {
@@ -166,4 +179,134 @@ public class OccurrenceService implements IOccurrenceService {
 
         return responseDTO;
     }
+
+    @Override
+    public OccurrenceSecondResponseDTO updateOccurrence(Long id, OccurrenceUpdateDTO occurrenceUpdateDTO) {
+        var occurrence = occurrenceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ocorrência não encontrada"));
+
+        var address = modelMapper.map(occurrenceUpdateDTO.getAddress(), Address.class);
+        
+        var occurrenceSubType = occurrenceSubTypeRepository.findById(occurrenceUpdateDTO.getOccurrenceSubType())
+                .orElseThrow(() -> new RuntimeException("Subtipo de ocorrência não encontrado"));
+        var occurrenceStatus = occurrenceStatusRepository.findById(occurrenceUpdateDTO.getStatus())
+                .orElseThrow(() -> new RuntimeException("Status não encontrado"));
+
+        occurrence.setOccurrenceHasVictims(occurrenceUpdateDTO.isOccurrenceHasVictims());
+        occurrence.setOccurrenceRequester(occurrenceUpdateDTO.getOccurrenceRequester());
+        occurrence.setOccurrenceRequesterPhoneNumber(occurrenceUpdateDTO.getOccurrenceRequesterPhoneNumber());
+        occurrence.setOccurrenceSubType(occurrenceSubType);
+        occurrence.setAddress(address);
+        occurrence.setOccurrenceDetails(occurrenceUpdateDTO.getOccurrenceDetails());
+        occurrence.setLatitude(occurrenceUpdateDTO.getLatitude());
+        occurrence.setLongitude(occurrenceUpdateDTO.getLongitude());
+        occurrence.setOccurrenceArrivalTime(occurrenceUpdateDTO.getOccurrenceArrivalTime());
+        occurrence.setStatus(occurrenceStatus);
+
+        occurrenceRepository.save(occurrence);
+
+        var existingUsers = occurrenceUsersRepository.findByOccurrence(occurrence);
+        occurrenceUsersRepository.deleteAll(existingUsers);
+        
+        var users = userRepository.findAllById(occurrenceUpdateDTO.getUserIds());
+        List<OccurrenceUsers> occurrenceUsers = users.stream()
+                .map(user -> new OccurrenceUsers(occurrence, user))
+                .toList();
+        occurrenceUsersRepository.saveAll(occurrenceUsers);
+
+        var existingVehicles = occurrenceVehiclesRepository.findByOccurrence(occurrence);
+        occurrenceVehiclesRepository.deleteAll(existingVehicles);
+        
+        var vehicles = vehicleRepository.findAllById(occurrenceUpdateDTO.getVehicles());
+        List<OccurrenceVehicles> occurrenceVehicles = vehicles.stream()
+                .map(vehicle -> new OccurrenceVehicles(occurrence, vehicle))
+                .toList();
+        occurrenceVehiclesRepository.saveAll(occurrenceVehicles);
+
+        var responseDTO = modelMapper.map(occurrence, OccurrenceSecondResponseDTO.class);
+        
+        responseDTO.setOccurrenceNature(occurrenceSubType.getOccurrenceType().getNature().getName());
+        responseDTO.setOccurrenceType(occurrenceSubType.getOccurrenceType().getName());
+        responseDTO.setOccurrenceSubType(occurrenceSubType.getName());
+        responseDTO.setStatus(occurrenceStatus.getName());
+        
+        responseDTO.setUsers(users.stream()
+                .map(user -> modelMapper.map(user, UserResponseDTO.class))
+                .toList());
+        
+        responseDTO.setVehicles(vehicles.stream()
+                .map(vehicle -> {
+                    VehicleResponseDTO vehicleDTO = new VehicleResponseDTO();
+                    vehicleDTO.setId(vehicle.getId());
+                    vehicleDTO.setActive(vehicle.isActive());
+                    vehicleDTO.setName(vehicle.getName());
+                    vehicleDTO.setBattalionId(vehicle.getBattalion().getId());
+                    vehicleDTO.setBattalionName(vehicle.getBattalion().getName());
+                    return vehicleDTO;
+                })
+                .toList());
+        
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO activate(Long id) {
+        var occurrence = occurrenceRepository.findById(id).orElse(null);
+        if (occurrence == null) {
+            return ResponseDTO.erro("Ocorrência não existe");
+        }
+        if(occurrence.isActive()){
+            return ResponseDTO.erro("Ocorrência já está ativa");
+        }
+        occurrence.setActive(true);
+        occurrenceRepository.save(occurrence);
+        return ResponseDTO.sucesso("Ocorrência ativada com sucesso");
+    }
+
+    @Override
+    public ResponseDTO deactivate(Long id) {
+        var occurrence = occurrenceRepository.findById(id).orElse(null);
+
+        if (occurrence == null) {
+            return ResponseDTO.erro("Ocorrência não existe");
+        }
+        if(!occurrence.isActive()){
+            return ResponseDTO.erro("Ocorrência já está desativada");
+        }
+        occurrence.setActive(false);
+        occurrenceRepository.save(occurrence);
+        return ResponseDTO.sucesso("Ocorrência desativada com sucesso");
+    }
+
+    @Override
+    public PaginatorGeneric<OccurrencePaginatorDTO> GetPaginatorGetPaginatorOccurrence(Pageable pageable, boolean active, String filterGeneric) {
+        Page<Occurrence> paginator;
+        
+        if (filterGeneric != null && !filterGeneric.isEmpty()) {
+            paginator = occurrenceRepository.findByActiveAndOccurrenceSubTypeNameContainingIgnoreCase(
+                    active, filterGeneric, pageable);
+        } else {
+            paginator = occurrenceRepository.findByActive(active, pageable);
+        }
+
+        List<OccurrencePaginatorDTO> contentList = paginator.getContent().stream()
+                .map(o -> {
+                    OccurrencePaginatorDTO dto = modelMapper.map(o, OccurrencePaginatorDTO.class);
+                    dto.setOccurrenceSubType(o.getOccurrenceSubType().getName());
+                    dto.setOccurrenceType(o.getOccurrenceSubType().getOccurrenceType().getName());
+                    dto.setOccurrenceNature(o.getOccurrenceSubType().getOccurrenceType().getNature().getName());
+                    dto.setStatus(o.getStatus().getName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return new PaginatorGeneric<>(
+                paginator.getNumber(),
+                paginator.getSize(),
+                (int) paginator.getTotalElements(),
+                contentList
+        );
+    }
+
+
 }

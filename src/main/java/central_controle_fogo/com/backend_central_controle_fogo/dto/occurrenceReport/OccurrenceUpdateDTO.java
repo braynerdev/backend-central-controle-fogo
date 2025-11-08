@@ -1,6 +1,5 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport;
 
-import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceStatus;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.address.AddressRegisterDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -31,13 +30,12 @@ public class OccurrenceUpdateDTO {
     @NotBlank(message = "Insira o telefone para contato do solicitante")
     private String occurrenceRequesterPhoneNumber;
 
-    @NotBlank(message = "Insira o tipo da ocorrência")
-    private String occurrenceSubType;
+    @NotNull(message = "Insira o subtipo da ocorrência")
+    private Long occurrenceSubType;
 
     @NotNull(message = "O endereço é obrigatório")
     @Valid
     private AddressRegisterDTO address;
-
 
     @NotBlank(message = "Insira os detalhes da ocorrência")
     private String occurrenceDetails;
@@ -53,8 +51,14 @@ public class OccurrenceUpdateDTO {
     private BigDecimal longitude;
 
     @NotNull(message = "O horário de chegada é obrigatório")
-    private LocalDateTime occurrenceArrivalTime;
+    private OffsetDateTime occurrenceArrivalTime;
 
     @NotNull(message = "A lista de usuários é obrigatória")
     private List<Long> userIds;
+
+    @NotNull(message = "A lista de veículos é obrigatória")
+    private List<Long> vehicles;
+
+    @NotNull(message = "O status é obrigatório")
+    private Long status;
 }

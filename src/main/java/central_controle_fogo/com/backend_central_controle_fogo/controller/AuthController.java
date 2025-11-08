@@ -180,7 +180,7 @@ public class AuthController {
 
     @GetMapping(value = "/paginator")
     @Operation(summary = "Pegar usuários paginados")
-    public ResponseEntity<PaginatorGeneric> getBattalionPaginator(@RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<PaginatorGeneric> getUserPaginator(@RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int size,
                                                                   @RequestParam(required = false) String filterGeneric,
                                                                   @RequestParam(defaultValue = "true") boolean active){
