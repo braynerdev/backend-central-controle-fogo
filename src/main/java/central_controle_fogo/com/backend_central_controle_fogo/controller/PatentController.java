@@ -53,7 +53,7 @@ public class PatentController {
         return ResponseEntity.ok(service);
     }
 
-    @PutMapping(value = "deactivate/{id}")
+    @PatchMapping(value = "deactivate/{id}")
     @Operation(summary = "Desativar usuário pelo id")
     public ResponseEntity deactivate(@PathVariable Long id) {
         try{
@@ -72,7 +72,7 @@ public class PatentController {
         }
     }
 
-    @PutMapping(value = "activate/{id}")
+    @PatchMapping(value = "activate/{id}")
     @Operation(summary = "Ativar o usuário.")
     public ResponseEntity activate(@PathVariable Long id){
         try{

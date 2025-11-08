@@ -104,7 +104,7 @@ public class BattalionController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PutMapping(value = "/deactivate/{id}")
+    @PatchMapping(value = "/deactivate/{id}")
     @Operation(summary = "Desativar usuário.")
     public ResponseEntity deactivateBattalion(@RequestParam Long id){
         try{
@@ -119,7 +119,7 @@ public class BattalionController {
         }
     }
 
-    @PutMapping(value = "/activate/{id}")
+    @PatchMapping(value = "/activate/{id}")
     @Operation(summary = "Ativar batalhão")
     public ResponseEntity activateBattalion(@RequestParam Long id){
         try{

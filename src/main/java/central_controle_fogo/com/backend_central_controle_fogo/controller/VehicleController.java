@@ -61,7 +61,7 @@ public class VehicleController {
         return ResponseEntity.ok(service);
     }
 
-    @PutMapping(value = "deactivate/{id}")
+    @PatchMapping(value = "deactivate/{id}")
     @Operation(summary = "Desativar veículo pelo id")
     public ResponseEntity deactivate(@PathVariable Long id) {
         try{
@@ -80,7 +80,7 @@ public class VehicleController {
         }
     }
 
-    @PutMapping(value = "activate/{id}")
+    @PatchMapping(value = "activate/{id}")
     @Operation(summary = "Ativar o veículo pelo id.")
     public ResponseEntity activate(@PathVariable Long id){
         try{
