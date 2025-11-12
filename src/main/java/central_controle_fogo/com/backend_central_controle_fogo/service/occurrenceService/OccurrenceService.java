@@ -59,13 +59,12 @@ public class OccurrenceService implements IOccurrenceService {
         
         var occurrenceSubType = occurrenceSubTypeRepository.findById(occurrenceFirstRequestDTO.getOccurrenceSubType())
                 .orElseThrow(() -> new RuntimeException("Subtipo de ocorrência não encontrado"));
-        var occurrenceStatus = occurrenceStatusRepository.findById(occurrenceFirstRequestDTO.getStatus())
-                .orElseThrow(() -> new RuntimeException("status não encontrado"));
         var occurrence = modelMapper.map(occurrenceFirstRequestDTO, Occurrence.class);
+        var status = occurrenceStatusRepository.findByname("AGUARDANDO ATENDIMENTO");
 
         occurrence.setAddress(address);
         occurrence.setOccurrenceSubType(occurrenceSubType);
-        occurrence.setStatus(occurrenceStatus);
+        occurrence.setStatus(status);
 
         occurrenceRepository.save(occurrence);
 
@@ -74,7 +73,7 @@ public class OccurrenceService implements IOccurrenceService {
         occurrenceFirstResponseDTO.setOccurrenceNature(occurrenceSubType.getOccurrenceType().getNature().getName());
         occurrenceFirstResponseDTO.setOccurrenceType(occurrenceSubType.getOccurrenceType().getName());
         occurrenceFirstResponseDTO.setOccurrenceSubType(occurrenceSubType.getName());
-        occurrenceFirstResponseDTO.setStatus(occurrenceStatus.getName());
+        occurrenceFirstResponseDTO.setStatus("AGUARDANDO ATENDIMENTO");
 
         return occurrenceFirstResponseDTO;
     }

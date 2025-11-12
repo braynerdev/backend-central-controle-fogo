@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OccurrenceStatusRepository extends JpaRepository<OccurrenceStatus, Long> {
+    public OccurrenceStatus findByname(String name);
 }

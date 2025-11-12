@@ -14,7 +14,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class OccurrenceFirstRequestDTO {
     @NotNull(message = "Selecione se há vítimas")
     private boolean occurrenceHasVictims;
@@ -32,6 +31,4 @@ public class OccurrenceFirstRequestDTO {
     @NotNull(message = "O endereço é obrigatório")
     @Valid
     private AddressRegisterDTO address;
-
-    private Long status;
 }
