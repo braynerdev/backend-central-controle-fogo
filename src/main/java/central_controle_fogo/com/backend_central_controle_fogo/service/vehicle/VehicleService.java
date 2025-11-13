@@ -4,6 +4,7 @@ import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.Pagin
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.patent.PatentResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.vehicle.VehicleRequestDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.vehicle.VehicleResponseAllDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.vehicle.VehicleResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.vehicles.Vehicle;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.vehicle.IVehicleRepository;
@@ -66,6 +67,15 @@ public class VehicleService implements IVehicleService{
         catch(Exception e){
             return null;
         }
+    }
+
+    @Override
+    public List<VehicleResponseAllDTO> getAll() {
+        var repositoryVehicle = vehicleRepository.findByActiveTrue();
+
+        return repositoryVehicle.stream()
+                .map(vehicle -> modelMapper.map(vehicle, VehicleResponseAllDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override

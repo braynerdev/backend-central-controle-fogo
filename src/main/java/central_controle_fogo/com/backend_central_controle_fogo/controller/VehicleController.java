@@ -96,6 +96,20 @@ public class VehicleController {
         }
     }
 
+    @GetMapping(value = "/all")
+    @Operation(summary = "Ativar o veículo pelo id.")
+    public ResponseEntity<?> getAllVehicles(){
+        try{
+            var service = vehicleService.getAll();
+            if(service == null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.ok(service);
+        }
+        catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping(value = "/paginator")
     @Operation(summary = "Pegar veículoS paginados")

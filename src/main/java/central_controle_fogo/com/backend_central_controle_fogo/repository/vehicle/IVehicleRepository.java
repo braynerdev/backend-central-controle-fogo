@@ -2,6 +2,8 @@ package central_controle_fogo.com.backend_central_controle_fogo.repository.vehic
 
 import central_controle_fogo.com.backend_central_controle_fogo.model.vehicles.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
 public interface IVehicleRepository extends JpaRepository<Vehicle, Long> {
+    List<Vehicle> findByActiveTrue();
 }
