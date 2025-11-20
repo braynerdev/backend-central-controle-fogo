@@ -1,6 +1,5 @@
 package central_controle_fogo.com.backend_central_controle_fogo.model.auth;
 
-import central_controle_fogo.com.backend_central_controle_fogo.Enum.RolesEnum;
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,12 +10,14 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(name = "auth_roles")
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Roles extends Base {

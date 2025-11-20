@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,7 @@ public class AuthController {
 
     @GetMapping()
     @Operation(summary = "Buscar informações do usuário.")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -59,6 +61,7 @@ public class AuthController {
 
     @GetMapping(value = "/{id}")
     @Operation(summary = "Buscar usuário por ID")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity getById(@PathVariable Long id) {
         try{
             if (id == null || id < 1) {
@@ -75,6 +78,7 @@ public class AuthController {
 
     @PatchMapping(value = "deactivate/{id}")
     @Operation(summary = "Desativar usuário pelo id")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity deactivate(@PathVariable Long id) {
         try{
             if (id == null || id < 1) {
@@ -94,6 +98,7 @@ public class AuthController {
 
     @PatchMapping(value = "activate/{id}")
     @Operation(summary = "Ativar o usuário.")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity activate(@PathVariable Long id){
         try{
             if (id == null || id < 1) {
@@ -110,6 +115,7 @@ public class AuthController {
 
     @PostMapping(value = "/created/user")
     @Operation(summary = "Criar usuário")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity registerUser(@Valid @RequestBody CadastreRequestDTO cadastreRequestDTO) {
         try{
             if (cadastreRequestDTO == null) {
@@ -128,6 +134,7 @@ public class AuthController {
 
     @PostMapping(value = "refresh-token/")
     @Operation(summary = "Atualizar token de acesso")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity refreshToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
         try{
             if (refreshTokenRequestDTO.getRefreshToken() == null || refreshTokenRequestDTO.getRefreshToken().isEmpty()
@@ -166,6 +173,7 @@ public class AuthController {
 
     @PostMapping("/logout/{id}")
     @Operation(summary = "Realizar logout")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity logout(@PathVariable Long id) {
         try{
             var accessToken = authService.logout(id);
@@ -182,6 +190,7 @@ public class AuthController {
 
     @GetMapping(value = "/paginator")
     @Operation(summary = "Pegar usuários paginados")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<PaginatorGeneric> getUserPaginator(@RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int size,
                                                                   @RequestParam(required = false) String filterGeneric,
@@ -202,6 +211,7 @@ public class AuthController {
 
     @GetMapping(value = "/all")
     @Operation(summary = "Listar todos os usuários (id, nome, patente e batalhão)")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity getAllUsers() {
         try {
             var users = authService.GetAllUsers();

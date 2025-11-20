@@ -6,9 +6,12 @@ import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.Respo
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseListMessageDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.patent.Patent;
 import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.UserRoles;
 import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IRepositoryUser;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IRolesRepository;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IUserRolesRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.battalion.IBattalionRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.patent.IPatentRepository;
 import org.modelmapper.ModelMapper;
@@ -38,6 +41,10 @@ public class AuthService implements IAuthService {
     private IBattalionRepository battalionRepository;
     @Autowired
     private IPatentRepository patentRepository;
+    @Autowired
+    private IRolesRepository rolesRepository;
+    @Autowired
+    private IUserRolesRepository userRolesRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -165,6 +172,15 @@ public class AuthService implements IAuthService {
             user.setPatent(patent);
 
             var userSave = userRepository.save(user);
+
+            if (dto.getRoleIds() != null && !dto.getRoleIds().isEmpty()) {
+                var roles = rolesRepository.findAllById(dto.getRoleIds());
+                var userRoles = roles.stream()
+                    .map(role -> new UserRoles(userSave, role))
+                    .toList();
+                userRolesRepository.saveAll(userRoles);
+            }
+
             return ResponseListMessageDTO.sucesso(List.of("Usuário criado com sucesso!"));
         } catch (Exception e) {
             return ResponseListMessageDTO.erro(List.of("Erro ao criar usuário: " + e.getMessage()));
@@ -177,14 +193,19 @@ public class AuthService implements IAuthService {
         try {
             var now = Instant.now();
             var expiresIn = 3600;
-            var scopes = user.getRoles();
+            
+            // Extrair os nomes das roles do usuário
+            var roles = user.getRoles().stream()
+                    .map(userRole -> userRole.getRole().getName())
+                    .toList();
 
             var claims = JwtClaimsSet.builder()
                     .issuer("central_controle_fogo")
                     .subject(user.getId().toString())
                     .issuedAt(now)
                     .expiresAt(now.plusSeconds(expiresIn))
-                    .claim("scope", scopes)
+                    .claim("scope", String.join(" ", roles))
+                    .claim("roles", roles)
                     .claim("username", user.getUsername())
                     .claim("id", user.getId())
                     .build();

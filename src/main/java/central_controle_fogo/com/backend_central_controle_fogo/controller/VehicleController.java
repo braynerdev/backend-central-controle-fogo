@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +29,7 @@ public class VehicleController {
 
     @PostMapping()
     @Operation(summary = "Criar veículo")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR')")
     public ResponseEntity<?> createdVehicle(@Valid @RequestBody VehicleRequestDTO vehicleRequestDTO) {
         try{
             var service =  vehicleService.createdVehicle(vehicleRequestDTO);
@@ -43,6 +45,7 @@ public class VehicleController {
 
     @PutMapping(value = "/{id}")
     @Operation(summary = "Editar veículo")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR')")
     public ResponseEntity<?> putVehicle(@Valid @RequestBody VehicleRequestDTO vehicleRequestDTO, @RequestParam Long id){
         var service =  vehicleService.updateVehicle(id, vehicleRequestDTO);
         if(service == null){
@@ -53,6 +56,7 @@ public class VehicleController {
 
     @GetMapping(value = "/{id}")
     @Operation(summary = "Buscar veículo por ID")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getVehicle(@RequestParam Long id){
         var service =  vehicleService.getByIdVehicle(id);
         if(service == null){
@@ -63,6 +67,7 @@ public class VehicleController {
 
     @PatchMapping(value = "deactivate/{id}")
     @Operation(summary = "Desativar veículo")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR')")
     public ResponseEntity deactivate(@PathVariable Long id) {
         try{
             if (id == null || id < 1) {
@@ -82,6 +87,7 @@ public class VehicleController {
 
     @PatchMapping(value = "activate/{id}")
     @Operation(summary = "Ativar veículo")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR')")
     public ResponseEntity activate(@PathVariable Long id){
         try{
             if (id == null || id < 1) {
@@ -98,6 +104,7 @@ public class VehicleController {
 
     @GetMapping(value = "/all")
     @Operation(summary = "Listar todos os veículos")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getAllVehicles(){
         try{
             var service = vehicleService.getAll();
@@ -113,6 +120,7 @@ public class VehicleController {
 
     @GetMapping(value = "/paginator")
     @Operation(summary = "Buscar veículos paginados")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<PaginatorGeneric> getPaginatorPatent(@RequestParam(defaultValue = "1") int page,
                                                                @RequestParam(defaultValue = "10") int size,
                                                                @RequestParam(required = false) String filterGeneric,

@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,7 @@ public class BattalionController {
 
     @PostMapping(value = "/created")
     @Operation(summary = "Criar batalhão")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity createBattalion(@Valid @RequestBody BattalionRequestDTO battalionRequestDTO ) {
         try {
             if (battalionRequestDTO == null) {
@@ -46,6 +48,7 @@ public class BattalionController {
 
     @GetMapping(value = "/{id}")
     @Operation(summary = "Buscar batalhão por ID")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity getBattalion(@PathVariable() Long id) {
         try {
             if (id == null || id < 1) {
@@ -66,6 +69,7 @@ public class BattalionController {
 
     @PutMapping(value = "/{id}")
     @Operation(summary = "Editar Batalhão")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity putBattalion(@PathVariable() Long id, @Valid @RequestBody BattalionRequestDTO battalionRequestDTO) {
         try {
             if (id == null || id < 1) {
@@ -87,6 +91,7 @@ public class BattalionController {
 
     @GetMapping(value = "/paginator")
     @Operation(summary = "Pegar batalhões paginados")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<PaginatorGeneric> getBattalionPaginator(@RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int size,
                                                                   @RequestParam(required = false) String name,
@@ -106,6 +111,7 @@ public class BattalionController {
     }
     @PatchMapping(value = "/deactivate/{id}")
     @Operation(summary = "Desativar batalhão")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity deactivateBattalion(@RequestParam Long id){
         try{
             if  (id == null || id < 1) {
@@ -121,6 +127,7 @@ public class BattalionController {
 
     @PatchMapping(value = "/activate/{id}")
     @Operation(summary = "Ativar batalhão")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity activateBattalion(@RequestParam Long id){
         try{
             if  (id == null || id < 1) {
@@ -136,6 +143,7 @@ public class BattalionController {
 
     @GetMapping(value = "/all")
     @Operation(summary = "Listar todos os batalhões (id e nome)")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity getAllBattalions() {
         try {
             var battalions = battalionService.GetAllBattalions();

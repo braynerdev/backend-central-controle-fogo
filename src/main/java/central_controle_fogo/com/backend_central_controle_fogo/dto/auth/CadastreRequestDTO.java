@@ -11,8 +11,8 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -75,6 +75,8 @@ public class CadastreRequestDTO {
     @NotNull(message = "A patente é obrigatória")
 //    @ExistsInDatabase(repository = .class, message = "Patente não encontrado")
     private Long patent;
+
+    private List<Long> roleIds;
 
 
     public static User mapDto(CadastreRequestDTO dto) {

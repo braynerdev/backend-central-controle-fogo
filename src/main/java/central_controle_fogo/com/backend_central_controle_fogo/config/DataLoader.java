@@ -1,6 +1,8 @@
 package central_controle_fogo.com.backend_central_controle_fogo.config;
 
 import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.Roles;
+import central_controle_fogo.com.backend_central_controle_fogo.model.auth.UserRoles;
 import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.*;
@@ -8,6 +10,8 @@ import central_controle_fogo.com.backend_central_controle_fogo.model.patent.Pate
 import central_controle_fogo.com.backend_central_controle_fogo.model.vehicles.Vehicle;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.address.IAddressRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IRepositoryUser;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IRolesRepository;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IUserRolesRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.battalion.IBattalionRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceNatureRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceRepository;
@@ -37,6 +41,8 @@ public class DataLoader {
             IBattalionRepository battalionRepository,
             IAddressRepository addressRepository,
             IRepositoryUser userRepository,
+            IRolesRepository rolesRepository,
+            IUserRolesRepository userRolesRepository,
             IVehicleRepository vehicleRepository,
             OccurrenceNatureRepository occurrenceNatureRepository,
             OccurrenceStatusRepository occurrenceStatusRepository,
@@ -288,7 +294,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1975-03-15T00:00:00-03:00"),
                     "M"
             );
-            user1.setPassword(passwordEncoder.encode("senha123"));
+            user1.setPassword(passwordEncoder.encode("Senha@123"));
             user1.setPatent(coronel);
             user1.setBattalion(battalion1);
             user1.setAddress(addressUser1);
@@ -305,7 +311,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1980-07-22T00:00:00-03:00"),
                     "F"
             );
-            user2.setPassword(passwordEncoder.encode("senha123"));
+            user2.setPassword(passwordEncoder.encode("Senha@123"));
             user2.setPatent(capitao);
             user2.setBattalion(battalion1);
             user2.setAddress(addressUser2);
@@ -322,7 +328,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1985-11-10T00:00:00-03:00"),
                     "M"
             );
-            user3.setPassword(passwordEncoder.encode("senha123"));
+            user3.setPassword(passwordEncoder.encode("Senha@123"));
             user3.setPatent(tenente);
             user3.setBattalion(battalion2);
             user3.setAddress(addressUser3);
@@ -339,7 +345,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1990-05-18T00:00:00-03:00"),
                     "F"
             );
-            user4.setPassword(passwordEncoder.encode("senha123"));
+            user4.setPassword(passwordEncoder.encode("Senha@123"));
             user4.setPatent(sargento);
             user4.setBattalion(battalion2);
             user4.setAddress(addressUser4);
@@ -356,7 +362,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1995-09-25T00:00:00-03:00"),
                     "M"
             );
-            user5.setPassword(passwordEncoder.encode("senha123"));
+            user5.setPassword(passwordEncoder.encode("Senha@123"));
             user5.setPatent(soldado);
             user5.setBattalion(battalion3);
             user5.setAddress(addressUser5);
@@ -373,7 +379,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1970-01-01T00:00:00-03:00"),
                     "M"
             );
-            userAdmin.setPassword(passwordEncoder.encode("root102030"));
+            userAdmin.setPassword(passwordEncoder.encode("Admin@123"));
             userAdmin.setPatent(coronel);
             userAdmin.setBattalion(battalion1);
             userAdmin.setAddress(addressUserAdmin);
@@ -390,7 +396,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1988-12-03T00:00:00-03:00"),
                     "F"
             );
-            user7.setPassword(passwordEncoder.encode("senha123"));
+            user7.setPassword(passwordEncoder.encode("Senha@123"));
             user7.setPatent(cabo);
             user7.setBattalion(battalion4);
             user7.setAddress(new Address("Rua Haddock Lobo", 350, "Apto 201", "Cerqueira César", "São Paulo", "SP", "01414001"));
@@ -406,7 +412,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1992-04-15T00:00:00-03:00"),
                     "M"
             );
-            user8.setPassword(passwordEncoder.encode("senha123"));
+            user8.setPassword(passwordEncoder.encode("Senha@123"));
             user8.setPatent(soldado);
             user8.setBattalion(battalion5);
             user8.setAddress(new Address("Avenida Rebouças", 2100, null, "Pinheiros", "São Paulo", "SP", "05402400"));
@@ -422,7 +428,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1987-08-20T00:00:00-03:00"),
                     "F"
             );
-            user9.setPassword(passwordEncoder.encode("senha123"));
+            user9.setPassword(passwordEncoder.encode("Senha@123"));
             user9.setPatent(tenente2);
             user9.setBattalion(battalion6);
             user9.setAddress(new Address("Rua Alameda Santos", 1500, "Conjunto 305", "Paraíso", "São Paulo", "SP", "01419002"));
@@ -438,7 +444,7 @@ public class DataLoader {
                     OffsetDateTime.parse("1991-06-30T00:00:00-03:00"),
                     "M"
             );
-            user10.setPassword(passwordEncoder.encode("senha123"));
+            user10.setPassword(passwordEncoder.encode("Senha@123"));
             user10.setPatent(subtenente);
             user10.setBattalion(battalion7);
             user10.setAddress(new Address("Rua Pamplona", 900, "Casa", "Jardim Paulista", "São Paulo", "SP", "01405001"));
@@ -446,7 +452,39 @@ public class DataLoader {
 
             System.out.println("✓ Usuários inseridos: 10 registros (com endereços)");
 
-            // 6. Inserir Status de Ocorrência
+            // 6. Inserir Permissões (Roles)
+            Roles roleAdministrador = new Roles();
+            roleAdministrador.setName("ADMINISTRADOR");
+            roleAdministrador.setDescription("Acesso total ao sistema, incluindo gerenciamento de usuários e configurações");
+            roleAdministrador = rolesRepository.save(roleAdministrador);
+
+            Roles roleAgente = new Roles();
+            roleAgente.setName("AGENTE");
+            roleAgente.setDescription("Acesso operacional para registro e atualização de ocorrências");
+            roleAgente = rolesRepository.save(roleAgente);
+
+            Roles roleObservador = new Roles();
+            roleObservador.setName("OBSERVADOR");
+            roleObservador.setDescription("Acesso apenas para visualização de dados");
+            roleObservador = rolesRepository.save(roleObservador);
+
+            System.out.println("✓ Permissões inseridas: 3 registros");
+
+            // 7. Associar Permissões aos Usuários
+            userRolesRepository.save(new UserRoles(userAdmin, roleAdministrador));
+            userRolesRepository.save(new UserRoles(user1, roleAgente));
+            userRolesRepository.save(new UserRoles(user2, roleAgente));
+            userRolesRepository.save(new UserRoles(user3, roleAgente));
+            userRolesRepository.save(new UserRoles(user4, roleAgente));
+            userRolesRepository.save(new UserRoles(user5, roleAgente));
+            userRolesRepository.save(new UserRoles(user7, roleObservador));
+            userRolesRepository.save(new UserRoles(user8, roleAgente));
+            userRolesRepository.save(new UserRoles(user9, roleAgente));
+            userRolesRepository.save(new UserRoles(user10, roleAgente));
+
+            System.out.println("✓ Permissões associadas aos usuários");
+
+            // 8. Inserir Status de Ocorrência
             central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceStatus statusAguardando = new central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceStatus();
             statusAguardando.setName("AGUARDANDO ATENDIMENTO");
             statusAguardando = occurrenceStatusRepository.save(statusAguardando);
@@ -469,7 +507,7 @@ public class DataLoader {
 
             System.out.println("✓ Status de Ocorrência inseridos: 5 registros");
 
-            // 7. Inserir Classificação de Ocorrências CBMPE
+            // 9. Inserir Classificação de Ocorrências CBMPE
             System.out.println("\n=== Iniciando inserção da Classificação CBMPE ===");
             int countNature = 0, countType = 0, countSubType = 0;
 
@@ -1147,7 +1185,7 @@ public class DataLoader {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Subtipo 'Preso em Espaço Confinado' não encontrado"));
 
-            // 8. Inserir Veículos
+            // 10. Inserir Veículos
             Vehicle veiculo1 = new Vehicle();
             veiculo1.setName("ABT-01");
             veiculo1.setBattalion(battalion1);
@@ -1200,7 +1238,7 @@ public class DataLoader {
 
             System.out.println("✓ Veículos inseridos: 10 registros");
 
-            // 9. Inserir Ocorrências
+            // 11. Inserir Ocorrências
             Occurrence occurrence1 = new Occurrence();
             occurrence1.setOccurrenceHasVictims(true);
             occurrence1.setOccurrenceRequester("Maria da Silva");

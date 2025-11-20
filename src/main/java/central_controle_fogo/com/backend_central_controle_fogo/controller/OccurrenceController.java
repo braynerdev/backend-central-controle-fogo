@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,7 @@ public class OccurrenceController {
 
    @PostMapping(value = "/register")
    @Operation(summary = "Cadastrar ocorrência (primeira etapa)")
+   @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE')")
    public ResponseEntity<?> registerOccurence(@Valid @RequestBody OccurrenceFirstRequestDTO occurrence){
         try {
             var service = occurrenceService.registerOccurence(occurrence);
@@ -41,6 +43,7 @@ public class OccurrenceController {
 
     @PatchMapping(value = "/complement")
     @Operation(summary = "Cadastrar dados complementares da ocorrência (segunda etapa)")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE')")
     public ResponseEntity<?> registerComplement(@Valid @RequestBody OccurrenceSecondRequestDTO occurrence){
         try {
             var service = occurrenceService.registerComplement(occurrence);
@@ -56,7 +59,8 @@ public class OccurrenceController {
 
     @GetMapping(value = "{id}")
     @Operation(summary = "Buscar ocorrência por ID")
-    public ResponseEntity<?> registerComplement(@PathVariable Long id){
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
+    public ResponseEntity<?> getOccurrenceById(@PathVariable Long id){
         try {
             var service = occurrenceService.getOccurrenceById(id);
             if (service == null) {
@@ -72,6 +76,7 @@ public class OccurrenceController {
 
     @PutMapping(value = "/{id}")
     @Operation(summary = "Atualizar ocorrência")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity<?> updateOccurrence(@PathVariable Long id, @Valid @RequestBody OccurrenceUpdateDTO occurrenceUpdateDTO){
         try {
             var service = occurrenceService.updateOccurrence(id, occurrenceUpdateDTO);
@@ -88,6 +93,7 @@ public class OccurrenceController {
 
     @PatchMapping(value = "/activate/{id}")
     @Operation(summary = "Ativar ocorrência")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity<?> activate(@PathVariable Long id){
         try {
             var service = occurrenceService.activate(id);
@@ -103,6 +109,7 @@ public class OccurrenceController {
 
     @PatchMapping(value = "/deactivate/{id}")
     @Operation(summary = "Desativar ocorrência")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity<?> deactivate(@PathVariable Long id){
         try {
             var service = occurrenceService.deactivate(id);
@@ -118,6 +125,7 @@ public class OccurrenceController {
 
     @GetMapping(value = "/paginator")
     @Operation(summary = "Buscar ocorrências paginadas")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<PaginatorGeneric> getOccurrencePaginator(@RequestParam(defaultValue = "1") int page,
                                                                    @RequestParam(defaultValue = "10") int size,
                                                                    @RequestParam(required = false) String filterGeneric,
@@ -137,6 +145,7 @@ public class OccurrenceController {
 
     @GetMapping(value = "/natures")
     @Operation(summary = "Listar todas as naturezas de ocorrência (id e nome)")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getAllNatures() {
         try {
             var natures = occurrenceService.getAllOccurrenceNatures();
@@ -148,6 +157,7 @@ public class OccurrenceController {
 
     @GetMapping(value = "/types")
     @Operation(summary = "Listar todos os tipos de ocorrência (id e nome)")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getAllTypes() {
         try {
             var types = occurrenceService.getAllOccurrenceTypes();
@@ -159,6 +169,7 @@ public class OccurrenceController {
 
     @GetMapping(value = "/subtypes")
     @Operation(summary = "Listar todos os subtipos de ocorrência (id e nome)")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getAllSubTypes() {
         try {
             var subTypes = occurrenceService.getAllOccurrenceSubTypes();
@@ -170,6 +181,7 @@ public class OccurrenceController {
 
     @GetMapping(value = "/status")
     @Operation(summary = "Listar todos os status de ocorrência (id e nome)")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getAllStatuses() {
         try {
             var statuses = occurrenceService.getAllOccurrenceStatuses();
@@ -181,6 +193,7 @@ public class OccurrenceController {
 
     @GetMapping(value = "/infomap")
     @Operation(summary = "Listar informações das ocorrências para mapa")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getInfoMap() {
         try {
             var infoMap = occurrenceService.getInfoMap();

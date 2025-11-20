@@ -34,7 +34,7 @@ public class OpenApiConfig {
                                 .url("")))
                 .servers(List.of(
                         new Server()
-                                .url("http://localhost:8080")
+                                .url("http://localhost:8088")
                                 .description("Servidor de Desenvolvimento backend"),
                         new Server()
                                 .url("https://backend-central-controle-fogo.onrender.com")
@@ -50,6 +50,9 @@ public class OpenApiConfig {
                         new Tag()
                                 .name("Autenticação")
                                 .description("Endpoints para autenticação, login, logout e gestão de usuários"),
+                        new Tag()
+                                .name("Permissões")
+                                .description("Gerenciamento de permissões e roles do sistema"),
                         new Tag()
                                 .name("Ocorrência")
                                 .description("Gestão completa de ocorrências do corpo de bombeiros"),

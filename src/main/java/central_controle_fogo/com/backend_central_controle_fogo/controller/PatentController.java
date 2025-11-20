@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,7 @@ public class PatentController {
 
     @PostMapping(value = "/register/patent")
     @Operation(summary = "Criar patente")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity<?> createdPatent(@Valid @RequestBody PatentResquestDTO  patent){
         var service =  patentService.createdPatent(patent);
         if(service == null){
@@ -35,6 +37,7 @@ public class PatentController {
 
     @PutMapping(value = "/{id}")
     @Operation(summary = "Editar patente")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity<?> putPatente(@Valid @RequestBody PatentResquestDTO  patent, @RequestParam Long id){
         var service =  patentService.updatePatent(id, patent);
         if(service == null){
@@ -45,6 +48,7 @@ public class PatentController {
 
     @GetMapping(value = "/{id}")
     @Operation(summary = "Buscar patente por ID")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<?> getPatente(@RequestParam Long id){
         var service =  patentService.getByIdPatent(id);
         if(service == null){
@@ -55,6 +59,7 @@ public class PatentController {
 
     @PatchMapping(value = "deactivate/{id}")
     @Operation(summary = "Desativar patente")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity deactivate(@PathVariable Long id) {
         try{
             if (id == null || id < 1) {
@@ -74,6 +79,7 @@ public class PatentController {
 
     @PatchMapping(value = "activate/{id}")
     @Operation(summary = "Ativar patente")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     public ResponseEntity activate(@PathVariable Long id){
         try{
             if (id == null || id < 1) {
@@ -91,6 +97,7 @@ public class PatentController {
 
     @GetMapping(value = "/paginator")
     @Operation(summary = "Pegar patentes paginadas")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<PaginatorGeneric> getPaginatorPatent(@RequestParam(defaultValue = "1") int page,
                                                                @RequestParam(defaultValue = "10") int size,
                                                                @RequestParam(required = false) String filterGeneric,
@@ -111,6 +118,7 @@ public class PatentController {
 
     @GetMapping(value = "")
     @Operation(summary = "Pegar todas as patentes")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'AGENTE', 'OBSERVADOR')")
     public ResponseEntity<PatentResponseAllDTO> getAllPatents() {
         try {
             var service = patentService.getAllPatents();
