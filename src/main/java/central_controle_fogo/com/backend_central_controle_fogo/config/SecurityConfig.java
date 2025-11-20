@@ -94,7 +94,6 @@ public class SecurityConfig {
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        // Allow frontend origins (local development and production)
         configuration.setAllowedOrigins(java.util.List.of(
             "http://localhost:5173",
             "http://localhost:5174",

@@ -1,27 +1,21 @@
 # ==============================================
 # Application Properties for Render Deployment
 # ==============================================
-# Copy this file to application.properties or set these as environment variables in Render
-
-# App identity
 spring.application.name=${APP_NAME:backend-central-controle-fogo}
 
-# Server port (Render will set this automatically)
 server.port=${PORT:8088}
 
-# Database configuration (use Render PostgreSQL connection string)
-spring.datasource.url=${DATABASE_URL:jdbc:postgresql://localhost:5432/central_controle_fogo}
-spring.datasource.username=${DB_USERNAME:postgres}
-spring.datasource.password=${DB_PASSWORD:}
+# Database configuration
+spring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=require
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
 spring.datasource.driver-class-name=org.postgresql.Driver
 
-# Hibernate and JPA
 spring.jpa.properties.hibernate.jdbc.time_zone=UTC
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.hibernate.ddl-auto=${JPA_DDL_AUTO:update}
 spring.jpa.show-sql=${JPA_SHOW_SQL:false}
 spring.jpa.properties.hibernate.type.preferred_datetime_jdbc_type=TIMESTAMP_WITH_TIMEZONE
 
-# JWT keys (will be loaded from environment variables as base64)
 jwt.public.key.base64=${JWT_PUBLIC_KEY_BASE64:}
 jwt.private.key.base64=${JWT_PRIVATE_KEY_BASE64:}
