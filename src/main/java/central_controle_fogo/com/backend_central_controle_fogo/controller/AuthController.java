@@ -24,7 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("api/auth")
-@Tag(name = "Auth", description = "Operações relacionadas ao usuário")
+@Tag(name = "Autenticação", description = "Operações relacionadas à autenticação e usuários")
 public class AuthController {
 
     @Autowired
@@ -127,7 +127,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "refresh-token/")
-    @Operation(summary = "Refrsh token")
+    @Operation(summary = "Atualizar token de acesso")
     public ResponseEntity refreshToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
         try{
             if (refreshTokenRequestDTO.getRefreshToken() == null || refreshTokenRequestDTO.getRefreshToken().isEmpty()
@@ -148,6 +148,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Realizar login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
         try{
             var accessToken = authService.login(loginRequest);
@@ -164,6 +165,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout/{id}")
+    @Operation(summary = "Realizar logout")
     public ResponseEntity logout(@PathVariable Long id) {
         try{
             var accessToken = authService.logout(id);
@@ -198,5 +200,16 @@ public class AuthController {
         }
     }
 
+    @GetMapping(value = "/all")
+    @Operation(summary = "Listar todos os usuários (id, nome, patente e batalhão)")
+    public ResponseEntity getAllUsers() {
+        try {
+            var users = authService.GetAllUsers();
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

@@ -1,12 +1,13 @@
 package central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService;
 
-
 import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.UserPaginatorDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.auth.UserResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrencePaginatorDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceUpdateDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.SimpleIdNameDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.OccurrenceInfoMapDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceFirst.OccurrenceFirstRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceFirst.OccurrenceFirstResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceSecond.OccurrenceSecondRequestDTO;
@@ -17,7 +18,10 @@ import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Add
 import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceUsers;
 import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.Occurrence;
 import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceVehicles;
+import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrenceBattalions;
+import central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport.OccurrencePhotos;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.auth.IRepositoryUser;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.battalion.IBattalionRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.*;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.vehicle.IVehicleRepository;
 import org.modelmapper.ModelMapper;
@@ -49,6 +53,16 @@ public class OccurrenceService implements IOccurrenceService {
     private OccurrenceVehiclesRepository occurrenceVehiclesRepository;
     @Autowired
     private IVehicleRepository vehicleRepository;
+    @Autowired
+    private IBattalionRepository  battalionRepository;
+    @Autowired
+    private OccurrenceBattalionsRepository occurrenceBattalionsRepository;
+    @Autowired
+    private OccurrencePhotosRepository occurrencePhotosRepository;
+    @Autowired
+    private OccurrenceNatureRepository occurrenceNatureRepository;
+    @Autowired
+    private OccurrenceTypeRepository occurrenceTypeRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -94,14 +108,19 @@ public class OccurrenceService implements IOccurrenceService {
 
         occurrenceRepository.save(occurrence);
 
-        
+        // Remover usuários, veículos, batalhões e fotos existentes
         var existingUsers = occurrenceUsersRepository.findByOccurrence(occurrence);
         occurrenceUsersRepository.deleteAll(existingUsers);
         
         var existingVehicles = occurrenceVehiclesRepository.findByOccurrence(occurrence);
         occurrenceVehiclesRepository.deleteAll(existingVehicles);
 
-        
+        var existingBattalions = occurrenceBattalionsRepository.findByOccurrence(occurrence);
+        occurrenceBattalionsRepository.deleteAll(existingBattalions);
+
+        var existingPhotos = occurrencePhotosRepository.findByOccurrence(occurrence);
+        occurrencePhotosRepository.deleteAll(existingPhotos);
+
         var users = userRepository.findAllById(occurrenceSecondRequestDTO.getUserIds());
         var vehicles = vehicleRepository.findAllById(occurrenceSecondRequestDTO.getVehicles());
 
@@ -115,7 +134,18 @@ public class OccurrenceService implements IOccurrenceService {
                 .toList();
         occurrenceUsersRepository.saveAll(occurrenceUsers);
 
+        var battalions = battalionRepository.findAllById(occurrenceSecondRequestDTO.getBattalionIds());
+        List<OccurrenceBattalions> occurrenceBattalions = battalions.stream()
+                .map(battalion -> new OccurrenceBattalions(occurrence, battalion))
+                .toList();
+        occurrenceBattalionsRepository.saveAll(occurrenceBattalions);
 
+        if (occurrenceSecondRequestDTO.getPhotoUrls() != null && !occurrenceSecondRequestDTO.getPhotoUrls().isEmpty()) {
+            List<OccurrencePhotos> occurrencePhotos = occurrenceSecondRequestDTO.getPhotoUrls().stream()
+                    .map(photoUrl -> new OccurrencePhotos(occurrence, photoUrl))
+                    .toList();
+            occurrencePhotosRepository.saveAll(occurrencePhotos);
+        }
 
         var responseDTO = modelMapper.map(occurrence, OccurrenceSecondResponseDTO.class);
         
@@ -123,6 +153,14 @@ public class OccurrenceService implements IOccurrenceService {
         responseDTO.setOccurrenceType(occurrence.getOccurrenceSubType().getOccurrenceType().getName());
         responseDTO.setOccurrenceSubType(occurrence.getOccurrenceSubType().getName());
         responseDTO.setStatus(occurrenceStatus.getName());
+        
+        responseDTO.setBattalions(battalions.stream()
+                .map(battalion -> battalion.getName())
+                .toList());
+
+        if (occurrenceSecondRequestDTO.getPhotoUrls() != null) {
+            responseDTO.setPhotoUrls(occurrenceSecondRequestDTO.getPhotoUrls());
+        }
         
         responseDTO.setUsers(users.stream()
                 .map(user -> modelMapper.map(user, UserResponseDTO.class))
@@ -152,6 +190,8 @@ public class OccurrenceService implements IOccurrenceService {
         
         var occurrenceUsers = occurrenceUsersRepository.findByOccurrence(occurrence);
         var occurrenceVehicles = occurrenceVehiclesRepository.findByOccurrence(occurrence);
+        var occurrenceBattalions = occurrenceBattalionsRepository.findByOccurrence(occurrence);
+        var occurrencePhotos = occurrencePhotosRepository.findByOccurrence(occurrence);
 
         var responseDTO = modelMapper.map(occurrence, OccurrenceSecondResponseDTO.class);
 
@@ -159,6 +199,14 @@ public class OccurrenceService implements IOccurrenceService {
         responseDTO.setOccurrenceType(occurrence.getOccurrenceSubType().getOccurrenceType().getName());
         responseDTO.setOccurrenceSubType(occurrence.getOccurrenceSubType().getName());
         responseDTO.setStatus(occurrenceStatus.getName());
+        
+        responseDTO.setBattalions(occurrenceBattalions.stream()
+                .map(occBattalion -> occBattalion.getBattalion().getName())
+                .toList());
+
+        responseDTO.setPhotoUrls(occurrencePhotos.stream()
+                .map(OccurrencePhotos::getPhotoUrl)
+                .toList());
 
         responseDTO.setUsers(occurrenceUsers.stream()
                 .map(occUser -> modelMapper.map(occUser.getUser(), UserResponseDTO.class))
@@ -172,6 +220,7 @@ public class OccurrenceService implements IOccurrenceService {
                     vehicleDTO.setName(occVehicle.getVehicle().getName());
                     vehicleDTO.setBattalionId(occVehicle.getVehicle().getBattalion().getId());
                     vehicleDTO.setBattalionName(occVehicle.getVehicle().getBattalion().getName());
+
                     return vehicleDTO;
                 })
                 .toList());
@@ -204,23 +253,42 @@ public class OccurrenceService implements IOccurrenceService {
 
         occurrenceRepository.save(occurrence);
 
+        // Remover usuários, veículos, batalhões e fotos existentes
         var existingUsers = occurrenceUsersRepository.findByOccurrence(occurrence);
         occurrenceUsersRepository.deleteAll(existingUsers);
         
-        var users = userRepository.findAllById(occurrenceUpdateDTO.getUserIds());
-        List<OccurrenceUsers> occurrenceUsers = users.stream()
-                .map(user -> new OccurrenceUsers(occurrence, user))
-                .toList();
-        occurrenceUsersRepository.saveAll(occurrenceUsers);
-
         var existingVehicles = occurrenceVehiclesRepository.findByOccurrence(occurrence);
         occurrenceVehiclesRepository.deleteAll(existingVehicles);
-        
-        var vehicles = vehicleRepository.findAllById(occurrenceUpdateDTO.getVehicles());
-        List<OccurrenceVehicles> occurrenceVehicles = vehicles.stream()
-                .map(vehicle -> new OccurrenceVehicles(occurrence, vehicle))
+
+        var existingBattalions = occurrenceBattalionsRepository.findByOccurrence(occurrence);
+        occurrenceBattalionsRepository.deleteAll(existingBattalions);
+
+        var existingPhotos = occurrencePhotosRepository.findByOccurrence(occurrence);
+        occurrencePhotosRepository.deleteAll(existingPhotos);
+
+        var users = userRepository.findAllById(occurrenceUpdateDTO.getUserIds());
+List<OccurrenceUsers> occurrenceUsers = users.stream()
+        .map(user -> new OccurrenceUsers(occurrence, user))
+        .toList();
+occurrenceUsersRepository.saveAll(occurrenceUsers);
+
+var vehicles = vehicleRepository.findAllById(occurrenceUpdateDTO.getVehicles());
+List<OccurrenceVehicles> occurrenceVehicles = vehicles.stream()
+        .map(vehicle -> new OccurrenceVehicles(occurrence, vehicle))
+        .toList();
+occurrenceVehiclesRepository.saveAll(occurrenceVehicles);
+        var battalions = battalionRepository.findAllById(occurrenceUpdateDTO.getBattalionIds());
+        List<OccurrenceBattalions> occurrenceBattalions = battalions.stream()
+                .map(battalion -> new OccurrenceBattalions(occurrence, battalion))
                 .toList();
-        occurrenceVehiclesRepository.saveAll(occurrenceVehicles);
+        occurrenceBattalionsRepository.saveAll(occurrenceBattalions);
+
+        if (occurrenceUpdateDTO.getPhotoUrls() != null && !occurrenceUpdateDTO.getPhotoUrls().isEmpty()) {
+            List<OccurrencePhotos> occurrencePhotos = occurrenceUpdateDTO.getPhotoUrls().stream()
+                    .map(photoUrl -> new OccurrencePhotos(occurrence, photoUrl))
+                    .toList();
+            occurrencePhotosRepository.saveAll(occurrencePhotos);
+        }
 
         var responseDTO = modelMapper.map(occurrence, OccurrenceSecondResponseDTO.class);
         
@@ -228,6 +296,14 @@ public class OccurrenceService implements IOccurrenceService {
         responseDTO.setOccurrenceType(occurrenceSubType.getOccurrenceType().getName());
         responseDTO.setOccurrenceSubType(occurrenceSubType.getName());
         responseDTO.setStatus(occurrenceStatus.getName());
+        
+        responseDTO.setBattalions(battalions.stream()
+                .map(battalion -> battalion.getName())
+                .toList());
+
+        if (occurrenceUpdateDTO.getPhotoUrls() != null) {
+            responseDTO.setPhotoUrls(occurrenceUpdateDTO.getPhotoUrls());
+        }
         
         responseDTO.setUsers(users.stream()
                 .map(user -> modelMapper.map(user, UserResponseDTO.class))
@@ -295,6 +371,15 @@ public class OccurrenceService implements IOccurrenceService {
                     dto.setOccurrenceType(o.getOccurrenceSubType().getOccurrenceType().getName());
                     dto.setOccurrenceNature(o.getOccurrenceSubType().getOccurrenceType().getNature().getName());
                     dto.setStatus(o.getStatus().getName());
+
+                    var occurrenceBattalions = occurrenceBattalionsRepository.findByOccurrence(o);
+                    dto.setBattalions(occurrenceBattalions.stream()
+                            .map(occBattalion -> occBattalion.getBattalion().getName())
+                            .toList());
+
+                    var occurrencePhotos = occurrencePhotosRepository.findByOccurrence(o);
+                    dto.setPhotoCount(occurrencePhotos.size());
+                    
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -307,5 +392,55 @@ public class OccurrenceService implements IOccurrenceService {
         );
     }
 
+    @Override
+    public List<SimpleIdNameDTO> getAllOccurrenceNatures() {
+        return occurrenceNatureRepository.findAll().stream()
+                .map(nature -> new SimpleIdNameDTO(nature.getId(), nature.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SimpleIdNameDTO> getAllOccurrenceTypes() {
+        return occurrenceTypeRepository.findAll().stream()
+                .map(type -> new SimpleIdNameDTO(type.getId(), type.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SimpleIdNameDTO> getAllOccurrenceSubTypes() {
+        return occurrenceSubTypeRepository.findAll().stream()
+                .map(subType -> new SimpleIdNameDTO(subType.getId(), subType.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SimpleIdNameDTO> getAllOccurrenceStatuses() {
+        return occurrenceStatusRepository.findAll().stream()
+                .map(status -> new SimpleIdNameDTO(status.getId(), status.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OccurrenceInfoMapDTO> getInfoMap() {
+        return occurrenceRepository.findAll().stream()
+                .map(occurrence -> {
+                    OccurrenceInfoMapDTO dto = new OccurrenceInfoMapDTO();
+                    dto.setId(occurrence.getId());
+                    dto.setTypeId(occurrence.getOccurrenceSubType().getOccurrenceType().getId());
+                    dto.setTypeName(occurrence.getOccurrenceSubType().getOccurrenceType().getName());
+                    dto.setSubtypeId(occurrence.getOccurrenceSubType().getId());
+                    dto.setSubtypeName(occurrence.getOccurrenceSubType().getName());
+                    dto.setNatureId(occurrence.getOccurrenceSubType().getOccurrenceType().getNature().getId());
+                    dto.setNatureName(occurrence.getOccurrenceSubType().getOccurrenceType().getNature().getName());
+                    dto.setStatusId(occurrence.getStatus().getId());
+                    dto.setStatusName(occurrence.getStatus().getName());
+                    dto.setDescription(occurrence.getOccurrenceDetails());
+                    dto.setLatitude(occurrence.getLatitude());
+                    dto.setLongitude(occurrence.getLongitude());
+                    dto.setDate(occurrence.getCreatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
 }

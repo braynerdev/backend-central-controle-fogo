@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/vehicle")
-@Tag(name = "Vehicle", description = "Operações relacionadas a patente")
+@Tag(name = "Veículo", description = "Operações relacionadas a veículos")
 public class VehicleController {
 
     @Autowired
     private VehicleService vehicleService;
 
     @PostMapping()
-    @Operation(summary = "Criar vehicle")
+    @Operation(summary = "Criar veículo")
     public ResponseEntity<?> createdVehicle(@Valid @RequestBody VehicleRequestDTO vehicleRequestDTO) {
         try{
             var service =  vehicleService.createdVehicle(vehicleRequestDTO);
@@ -52,7 +52,7 @@ public class VehicleController {
     }
 
     @GetMapping(value = "/{id}")
-    @Operation(summary = "Pegar veículo pelo id")
+    @Operation(summary = "Buscar veículo por ID")
     public ResponseEntity<?> getVehicle(@RequestParam Long id){
         var service =  vehicleService.getByIdVehicle(id);
         if(service == null){
@@ -62,7 +62,7 @@ public class VehicleController {
     }
 
     @PatchMapping(value = "deactivate/{id}")
-    @Operation(summary = "Desativar veículo pelo id")
+    @Operation(summary = "Desativar veículo")
     public ResponseEntity deactivate(@PathVariable Long id) {
         try{
             if (id == null || id < 1) {
@@ -81,7 +81,7 @@ public class VehicleController {
     }
 
     @PatchMapping(value = "activate/{id}")
-    @Operation(summary = "Ativar o veículo pelo id.")
+    @Operation(summary = "Ativar veículo")
     public ResponseEntity activate(@PathVariable Long id){
         try{
             if (id == null || id < 1) {
@@ -97,7 +97,7 @@ public class VehicleController {
     }
 
     @GetMapping(value = "/all")
-    @Operation(summary = "Ativar o veículo pelo id.")
+    @Operation(summary = "Listar todos os veículos")
     public ResponseEntity<?> getAllVehicles(){
         try{
             var service = vehicleService.getAll();
@@ -112,7 +112,7 @@ public class VehicleController {
     }
 
     @GetMapping(value = "/paginator")
-    @Operation(summary = "Pegar veículoS paginados")
+    @Operation(summary = "Buscar veículos paginados")
     public ResponseEntity<PaginatorGeneric> getPaginatorPatent(@RequestParam(defaultValue = "1") int page,
                                                                @RequestParam(defaultValue = "10") int size,
                                                                @RequestParam(required = false) String filterGeneric,

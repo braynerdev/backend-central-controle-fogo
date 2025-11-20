@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,4 +23,6 @@ public class OccurrencePaginatorDTO {
     private String occurrenceSubType;
     private String status;
     private OffsetDateTime createDate;
+    private List<String> battalions;
+    private Integer photoCount;
 }

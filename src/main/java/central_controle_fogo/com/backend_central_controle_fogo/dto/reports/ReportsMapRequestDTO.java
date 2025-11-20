@@ -16,5 +16,8 @@ import java.time.OffsetDateTime;
 public class ReportsMapRequestDTO {
     private OffsetDateTime dataInicial;
     private OffsetDateTime dataFinal;
-    private String natureza;
+    private Long natureza;
+    private Long type;
+    private Long subType;
+    private Long battalion;
 }

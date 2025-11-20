@@ -56,4 +56,9 @@ public class OccurrenceSecondRequestDTO {
 
     @NotNull(message = "O ID da ocorrência é obrigatório")
     private Long occurrenceId;
+
+    @NotNull(message = "A lista de IDs dos batalhões é obrigatória")
+    private List<Long> battalionIds;
+
+    private List<String> photoUrls;
 }

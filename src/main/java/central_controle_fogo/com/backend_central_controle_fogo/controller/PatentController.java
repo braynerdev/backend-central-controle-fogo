@@ -44,7 +44,7 @@ public class PatentController {
     }
 
     @GetMapping(value = "/{id}")
-    @Operation(summary = "Pegar patente pelo id")
+    @Operation(summary = "Buscar patente por ID")
     public ResponseEntity<?> getPatente(@RequestParam Long id){
         var service =  patentService.getByIdPatent(id);
         if(service == null){
@@ -54,7 +54,7 @@ public class PatentController {
     }
 
     @PatchMapping(value = "deactivate/{id}")
-    @Operation(summary = "Desativar usuário pelo id")
+    @Operation(summary = "Desativar patente")
     public ResponseEntity deactivate(@PathVariable Long id) {
         try{
             if (id == null || id < 1) {
@@ -73,7 +73,7 @@ public class PatentController {
     }
 
     @PatchMapping(value = "activate/{id}")
-    @Operation(summary = "Ativar o usuário.")
+    @Operation(summary = "Ativar patente")
     public ResponseEntity activate(@PathVariable Long id){
         try{
             if (id == null || id < 1) {

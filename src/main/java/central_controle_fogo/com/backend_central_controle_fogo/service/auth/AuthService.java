@@ -276,5 +276,17 @@ public class AuthService implements IAuthService {
         return paginatorGeneric;
     }
 
+    @Override
+    public List<UserSimpleDTO> GetAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(u -> new UserSimpleDTO(
+                        u.getId(), 
+                        u.getName(), 
+                        u.getPatent() != null ? u.getPatent().getName() : null,
+                        u.getBattalion() != null ? u.getBattalion().getName() : null
+                ))
+                .collect(Collectors.toList());
+    }
 
 }

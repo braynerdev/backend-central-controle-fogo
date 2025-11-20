@@ -16,6 +16,8 @@ import central_controle_fogo.com.backend_central_controle_fogo.repository.occurr
 import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceTypeRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceUsersRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceVehiclesRepository;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrenceBattalionsRepository;
+import central_controle_fogo.com.backend_central_controle_fogo.repository.occurrenceReport.OccurrencePhotosRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.patent.IPatentRepository;
 import central_controle_fogo.com.backend_central_controle_fogo.repository.vehicle.IVehicleRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -43,6 +45,8 @@ public class DataLoader {
             OccurrenceRepository occurrenceRepository,
             OccurrenceUsersRepository occurrenceUsersRepository,
             OccurrenceVehiclesRepository occurrenceVehiclesRepository,
+            OccurrenceBattalionsRepository occurrenceBattalionsRepository,
+            OccurrencePhotosRepository occurrencePhotosRepository,
             BCryptPasswordEncoder passwordEncoder
     ) {
         return args -> {
@@ -1392,6 +1396,65 @@ public class DataLoader {
 
             System.out.println("✓ Relações Ocorrência-Veículos inseridas: 10 registros");
 
+            // 12. Inserir Relações Ocorrência-Batalhões
+            OccurrenceBattalions occBat1 = new OccurrenceBattalions(occurrence1, battalion1);
+            occurrenceBattalionsRepository.save(occBat1);
+
+            OccurrenceBattalions occBat2_1 = new OccurrenceBattalions(occurrence2, battalion2);
+            occurrenceBattalionsRepository.save(occBat2_1);
+
+            OccurrenceBattalions occBat3_1 = new OccurrenceBattalions(occurrence3, battalion3);
+            occurrenceBattalionsRepository.save(occBat3_1);
+            OccurrenceBattalions occBat3_2 = new OccurrenceBattalions(occurrence3, battalion2);
+            occurrenceBattalionsRepository.save(occBat3_2);
+
+            OccurrenceBattalions occBat4 = new OccurrenceBattalions(occurrence4, battalion4);
+            occurrenceBattalionsRepository.save(occBat4);
+
+            OccurrenceBattalions occBat5 = new OccurrenceBattalions(occurrence5, battalion5);
+            occurrenceBattalionsRepository.save(occBat5);
+
+            OccurrenceBattalions occBat6 = new OccurrenceBattalions(occurrence6, battalion6);
+            occurrenceBattalionsRepository.save(occBat6);
+
+            OccurrenceBattalions occBat7 = new OccurrenceBattalions(occurrence7, battalion7);
+            occurrenceBattalionsRepository.save(occBat7);
+
+            OccurrenceBattalions occBat8 = new OccurrenceBattalions(occurrence8, battalion8);
+            occurrenceBattalionsRepository.save(occBat8);
+
+            OccurrenceBattalions occBat9 = new OccurrenceBattalions(occurrence9, battalion9);
+            occurrenceBattalionsRepository.save(occBat9);
+
+            OccurrenceBattalions occBat10 = new OccurrenceBattalions(occurrence10, battalion10);
+            occurrenceBattalionsRepository.save(occBat10);
+
+            System.out.println("✓ Relações Ocorrência-Batalhões inseridas: 11 registros");
+
+            // 13. Inserir Fotos de Ocorrências (exemplos)
+            OccurrencePhotos photo1_1 = new OccurrencePhotos(occurrence1, "https://storage.example.com/occurrences/2024/01/incident_001_photo1.jpg");
+            occurrencePhotosRepository.save(photo1_1);
+
+            OccurrencePhotos photo1_2 = new OccurrencePhotos(occurrence1, "https://storage.example.com/occurrences/2024/01/incident_001_photo2.jpg");
+            occurrencePhotosRepository.save(photo1_2);
+
+            OccurrencePhotos photo3_1 = new OccurrencePhotos(occurrence3, "https://storage.example.com/occurrences/2024/01/incident_003_scene.jpg");
+            occurrencePhotosRepository.save(photo3_1);
+
+            OccurrencePhotos photo5_1 = new OccurrencePhotos(occurrence5, "https://storage.example.com/occurrences/2024/01/incident_005_ambulance.jpg");
+            occurrencePhotosRepository.save(photo5_1);
+
+            OccurrencePhotos photo8_1 = new OccurrencePhotos(occurrence8, "https://storage.example.com/occurrences/2024/01/incident_008_rescue1.jpg");
+            occurrencePhotosRepository.save(photo8_1);
+
+            OccurrencePhotos photo8_2 = new OccurrencePhotos(occurrence8, "https://storage.example.com/occurrences/2024/01/incident_008_rescue2.jpg");
+            occurrencePhotosRepository.save(photo8_2);
+
+            OccurrencePhotos photo8_3 = new OccurrencePhotos(occurrence8, "https://storage.example.com/occurrences/2024/01/incident_008_rescue3.jpg");
+            occurrencePhotosRepository.save(photo8_3);
+
+            System.out.println("✓ Fotos de Ocorrências inseridas: 7 registros");
+
             System.out.println("\n===========================================");
             System.out.println("Dados iniciais inseridos com sucesso!");
             System.out.println("===========================================");
@@ -1418,7 +1481,11 @@ public class DataLoader {
             System.out.println("   • 10 Ocorrências (com endereços)");
             System.out.println("   • 10 Relações Ocorrência-Usuários");
             System.out.println("   • 10 Relações Ocorrência-Veículos");
+            System.out.println("   • 11 Relações Ocorrência-Batalhões");
+            System.out.println("   • 7 Fotos de Ocorrências");
             System.out.println("\n💡 Nota: Occurrence1 e Occurrence3 possuem múltiplos usuários e veículos associados");
+            System.out.println("💡 Nota: Occurrence3 possui múltiplos batalhões (2º e 3º Batalhões)");
+            System.out.println("💡 Nota: Occurrence1, Occurrence3, Occurrence5 e Occurrence8 possuem fotos registradas");
             System.out.println("===========================================\n");
         };
     }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/battalion")
-@Tag(name = "battalion", description = "Operações relacionadas a batalhão")
+@Tag(name = "Batalhão", description = "Operações relacionadas a batalhões")
 public class BattalionController {
 
     @Autowired
@@ -24,7 +24,7 @@ public class BattalionController {
 
 
     @PostMapping(value = "/created")
-    @Operation(summary = "criar batalhão")
+    @Operation(summary = "Criar batalhão")
     public ResponseEntity createBattalion(@Valid @RequestBody BattalionRequestDTO battalionRequestDTO ) {
         try {
             if (battalionRequestDTO == null) {
@@ -45,7 +45,7 @@ public class BattalionController {
 
 
     @GetMapping(value = "/{id}")
-    @Operation(summary = "Pegar batalhão")
+    @Operation(summary = "Buscar batalhão por ID")
     public ResponseEntity getBattalion(@PathVariable() Long id) {
         try {
             if (id == null || id < 1) {
@@ -105,7 +105,7 @@ public class BattalionController {
         }
     }
     @PatchMapping(value = "/deactivate/{id}")
-    @Operation(summary = "Desativar usuário.")
+    @Operation(summary = "Desativar batalhão")
     public ResponseEntity deactivateBattalion(@RequestParam Long id){
         try{
             if  (id == null || id < 1) {
@@ -128,6 +128,18 @@ public class BattalionController {
             }
             var service = battalionService.activateBattalion(id);
             return service ? new ResponseEntity("Batalhão ativado com sucesso.",HttpStatus.OK) : new ResponseEntity<>("Batalhão não existe ou já está ativado", HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/all")
+    @Operation(summary = "Listar todos os batalhões (id e nome)")
+    public ResponseEntity getAllBattalions() {
+        try {
+            var battalions = battalionService.GetAllBattalions();
+            return new ResponseEntity<>(battalions, HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

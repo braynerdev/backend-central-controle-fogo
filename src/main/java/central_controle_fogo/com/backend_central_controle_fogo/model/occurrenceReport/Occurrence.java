@@ -1,6 +1,7 @@
 package central_controle_fogo.com.backend_central_controle_fogo.model.occurrenceReport;
 
 import central_controle_fogo.com.backend_central_controle_fogo.model.Base;
+import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
 import central_controle_fogo.com.backend_central_controle_fogo.model.generic.Address;
 
 import jakarta.persistence.*;
@@ -25,7 +26,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Occurrence extends Base {
 
-    // primeira parte
     @Column(nullable = false)
     @NotNull(message = "Selecione se há vítimas")
     private boolean occurrenceHasVictims;
@@ -49,11 +49,10 @@ public class Occurrence extends Base {
     @NotNull(message = "O endereço é obrigatório")
     private Address address;
 
-    // nos dois
     @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false)
     private OccurrenceStatus status;
 
-    // segunda parte
     @Column(length = 2000)
     private String occurrenceDetails;
     
@@ -72,8 +71,12 @@ public class Occurrence extends Base {
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OccurrenceUsers> users;
 
+    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OccurrenceBattalions> battalions;
 
-    // primeira
+    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OccurrencePhotos> photos;
+
     public Occurrence(boolean occurrenceHasVictims, String occurrenceRequester, String occurrenceRequesterPhoneNumber, OccurrenceSubType occurrenceSubType, Address address, OccurrenceStatus status) {
         this.occurrenceHasVictims = occurrenceHasVictims;
         this.occurrenceRequester = occurrenceRequester;
@@ -83,8 +86,7 @@ public class Occurrence extends Base {
         this.status = status;
     }
 
-    //  segunda
-    public Occurrence(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, OffsetDateTime occurrenceArrivalTime, List<OccurrenceUsers> users, List<OccurrenceVehicles> occurrenceVehicles, OccurrenceStatus status) {
+    public Occurrence(String occurrenceDetails, BigDecimal latitude, BigDecimal longitude, OffsetDateTime occurrenceArrivalTime, List<OccurrenceUsers> users, List<OccurrenceVehicles> occurrenceVehicles, OccurrenceStatus status, List<OccurrenceBattalions> battalions, List<OccurrencePhotos> photos) {
         this.occurrenceDetails = occurrenceDetails;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -92,7 +94,7 @@ public class Occurrence extends Base {
         this.users = users;
         this.occurrenceVehicles = occurrenceVehicles;
         this.status = status;
+        this.battalions = battalions;
+        this.photos = photos;
     }
 }
-
-

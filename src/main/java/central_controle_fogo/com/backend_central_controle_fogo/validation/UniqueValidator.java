@@ -8,6 +8,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UniqueValidator implements ConstraintValidator<Unique, Object> {
@@ -37,11 +39,11 @@ public class UniqueValidator implements ConstraintValidator<Unique, Object> {
 
             if (result == null) return true;
 
-            if (result instanceof java.util.Optional<?> optional) {
+            if (result instanceof Optional<?> optional) {
                 return optional.isEmpty();
             }
 
-            if (result instanceof java.util.List<?> list) {
+            if (result instanceof List<?> list) {
                 return list.isEmpty();
             }
 

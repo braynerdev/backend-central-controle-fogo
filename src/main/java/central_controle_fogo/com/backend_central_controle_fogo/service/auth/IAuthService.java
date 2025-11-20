@@ -8,6 +8,8 @@ import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.Respo
 import central_controle_fogo.com.backend_central_controle_fogo.model.auth.User;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface IAuthService {
     UserInfoDTO getById(Long id);
     ResponseDTO deactivateUser(Long id);
@@ -19,4 +21,5 @@ public interface IAuthService {
     LoginResponse login(LoginRequest loginRequest);
     public boolean logout(Long id);
     PaginatorGeneric<UserPaginatorDTO> GetPaginatorUser(Pageable pageable, boolean active, String filterGeneric);
+    List<UserSimpleDTO> GetAllUsers();
 }

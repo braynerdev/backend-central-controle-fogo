@@ -1,6 +1,9 @@
 package central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport;
 
 import central_controle_fogo.com.backend_central_controle_fogo.dto.address.AddressRegisterDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -61,4 +64,9 @@ public class OccurrenceUpdateDTO {
 
     @NotNull(message = "O status é obrigatório")
     private Long status;
+
+    @NotNull(message = "A lista de batalhões é obrigatória")
+    private List<Long> battalionIds;
+
+    private List<String> photoUrls;
 }

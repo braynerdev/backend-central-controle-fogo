@@ -3,6 +3,7 @@ package central_controle_fogo.com.backend_central_controle_fogo.service.battalio
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionResponsePaginatorDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionSimpleDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.model.battalion.Battalion;
@@ -141,5 +142,12 @@ public class BattalionService implements IBattalionService {
         return true;
     }
 
+    @Override
+    public List<BattalionSimpleDTO> GetAllBattalions() {
+        List<Battalion> battalions = battalionRepository.findAll();
+        return battalions.stream()
+                .map(b -> new BattalionSimpleDTO(b.getId(), b.getName()))
+                .collect(Collectors.toList());
+    }
 
 }

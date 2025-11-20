@@ -55,4 +55,8 @@ public class OccurrenceSecondResponseDTO {
     private List<UserResponseDTO> users;
 
     private List<VehicleResponseDTO> vehicles;
+
+    private List<String> battalions;
+
+    private List<String> photoUrls;
 }

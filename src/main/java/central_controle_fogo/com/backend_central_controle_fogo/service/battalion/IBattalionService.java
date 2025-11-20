@@ -4,9 +4,12 @@ package central_controle_fogo.com.backend_central_controle_fogo.service.battalio
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionResponseDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionResponsePaginatorDTO;
+import central_controle_fogo.com.backend_central_controle_fogo.dto.battalion.BattalionSimpleDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.PaginatorGeneric;
 import central_controle_fogo.com.backend_central_controle_fogo.dto.generic.ResponseDTO;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface IBattalionService {
 
@@ -16,4 +19,5 @@ public interface IBattalionService {
     PaginatorGeneric<BattalionResponsePaginatorDTO> GetPaginatorBattalion(Pageable pageable,  String name, boolean active);
     boolean deactivateBattalion(Long id);
     boolean activateBattalion(Long id);
+    List<BattalionSimpleDTO> GetAllBattalions();
 }

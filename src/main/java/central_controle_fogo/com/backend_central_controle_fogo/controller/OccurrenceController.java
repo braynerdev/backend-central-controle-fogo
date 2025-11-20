@@ -6,6 +6,7 @@ import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceRep
 import central_controle_fogo.com.backend_central_controle_fogo.dto.occurrenceReport.occurrenceSecond.OccurrenceSecondRequestDTO;
 import central_controle_fogo.com.backend_central_controle_fogo.service.occurrenceService.OccurrenceService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -16,13 +17,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/occurrences")
+@Tag(name = "Ocorrência", description = "Operações relacionadas a ocorrências")
 public class OccurrenceController {
 
     @Autowired
     private OccurrenceService occurrenceService;
 
    @PostMapping(value = "/register")
-   @Operation(summary = "Cadastrar ocorrência.")
+   @Operation(summary = "Cadastrar ocorrência (primeira etapa)")
    public ResponseEntity<?> registerOccurence(@Valid @RequestBody OccurrenceFirstRequestDTO occurrence){
         try {
             var service = occurrenceService.registerOccurence(occurrence);
@@ -38,7 +40,7 @@ public class OccurrenceController {
    }
 
     @PatchMapping(value = "/complement")
-    @Operation(summary = "Cadastrar dados complementares ocorrência")
+    @Operation(summary = "Cadastrar dados complementares da ocorrência (segunda etapa)")
     public ResponseEntity<?> registerComplement(@Valid @RequestBody OccurrenceSecondRequestDTO occurrence){
         try {
             var service = occurrenceService.registerComplement(occurrence);
@@ -53,7 +55,7 @@ public class OccurrenceController {
     }
 
     @GetMapping(value = "{id}")
-    @Operation(summary = "Pegar ocorrência pelo id")
+    @Operation(summary = "Buscar ocorrência por ID")
     public ResponseEntity<?> registerComplement(@PathVariable Long id){
         try {
             var service = occurrenceService.getOccurrenceById(id);
@@ -69,7 +71,7 @@ public class OccurrenceController {
     }
 
     @PutMapping(value = "/{id}")
-    @Operation(summary = "Atualizar ocorrência completa")
+    @Operation(summary = "Atualizar ocorrência")
     public ResponseEntity<?> updateOccurrence(@PathVariable Long id, @Valid @RequestBody OccurrenceUpdateDTO occurrenceUpdateDTO){
         try {
             var service = occurrenceService.updateOccurrence(id, occurrenceUpdateDTO);
@@ -85,7 +87,7 @@ public class OccurrenceController {
     }
 
     @PatchMapping(value = "/activate/{id}")
-    @Operation(summary = "Ativar Ocorrência")
+    @Operation(summary = "Ativar ocorrência")
     public ResponseEntity<?> activate(@PathVariable Long id){
         try {
             var service = occurrenceService.activate(id);
@@ -100,7 +102,7 @@ public class OccurrenceController {
     }
 
     @PatchMapping(value = "/deactivate/{id}")
-    @Operation(summary = "Desativar Ocorrência")
+    @Operation(summary = "Desativar ocorrência")
     public ResponseEntity<?> deactivate(@PathVariable Long id){
         try {
             var service = occurrenceService.deactivate(id);
@@ -115,7 +117,7 @@ public class OccurrenceController {
     }
 
     @GetMapping(value = "/paginator")
-    @Operation(summary = "Pegar ocorrência paginada")
+    @Operation(summary = "Buscar ocorrências paginadas")
     public ResponseEntity<PaginatorGeneric> getOccurrencePaginator(@RequestParam(defaultValue = "1") int page,
                                                                    @RequestParam(defaultValue = "10") int size,
                                                                    @RequestParam(required = false) String filterGeneric,
@@ -130,6 +132,61 @@ public class OccurrenceController {
             return new ResponseEntity<>(service, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/natures")
+    @Operation(summary = "Listar todas as naturezas de ocorrência (id e nome)")
+    public ResponseEntity<?> getAllNatures() {
+        try {
+            var natures = occurrenceService.getAllOccurrenceNatures();
+            return ResponseEntity.ok(natures);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping(value = "/types")
+    @Operation(summary = "Listar todos os tipos de ocorrência (id e nome)")
+    public ResponseEntity<?> getAllTypes() {
+        try {
+            var types = occurrenceService.getAllOccurrenceTypes();
+            return ResponseEntity.ok(types);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping(value = "/subtypes")
+    @Operation(summary = "Listar todos os subtipos de ocorrência (id e nome)")
+    public ResponseEntity<?> getAllSubTypes() {
+        try {
+            var subTypes = occurrenceService.getAllOccurrenceSubTypes();
+            return ResponseEntity.ok(subTypes);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping(value = "/status")
+    @Operation(summary = "Listar todos os status de ocorrência (id e nome)")
+    public ResponseEntity<?> getAllStatuses() {
+        try {
+            var statuses = occurrenceService.getAllOccurrenceStatuses();
+            return ResponseEntity.ok(statuses);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping(value = "/infomap")
+    @Operation(summary = "Listar informações das ocorrências para mapa")
+    public ResponseEntity<?> getInfoMap() {
+        try {
+            var infoMap = occurrenceService.getInfoMap();
+            return ResponseEntity.ok(infoMap);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }
